@@ -12,4 +12,8 @@ public interface ItemService {
     List<ItemDto> getAll();
 
     ItemDto findById(Long id);
+
+    ItemDto update(Long id, ItemDto itemDto);
+
+    void delete(Long id);
 }

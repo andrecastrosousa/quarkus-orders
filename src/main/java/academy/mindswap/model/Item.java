@@ -2,7 +2,7 @@ package academy.mindswap.model;
 
 import jakarta.persistence.*;
 
-@Entity(name = "Item")
+@Entity(name = "Items")
 public class Item {
     @Id
     @GeneratedValue
@@ -10,6 +10,15 @@ public class Item {
 
     private String name;
     private double price;
+
+    public Item() {
+
+    }
+
+    public Item(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
 
     public Long getId() {
         return id;

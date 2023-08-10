@@ -1,114 +1,168 @@
 package academy.mindswap.resource;
 
-import academy.mindswap.model.Order;
+import academy.mindswap.converter.ItemConverter;
+import academy.mindswap.dto.ItemCreateDto;
+import academy.mindswap.dto.ItemDto;
+import academy.mindswap.repository.ItemRepository;
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.*;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 public class ItemResourceTest {
 
-    @Test
-    public void post() {
-        Order order = new Order();
-        order.setTotal(50.0F);
+    @Inject
+    ItemRepository itemRepository;
 
-        given()
-                .header("Content-Type", "application/json")
-                .body(order)
-                .when()
-                .post("/items")
-                .then()
-                .statusCode(200)
-                .body("id", is(7))
-                .body("total", is(50.0F))
-                .body("orderDateTime", is(order.getOrderDatetime()));
+    @Inject
+    ItemConverter itemConverter;
+
+    ItemDto itemDto = new ItemDto(1L, 50.0F, "toalha");
+
+    ItemCreateDto itemCreateDto = new ItemCreateDto(50.0F, "toalha");
+
+    @BeforeEach
+    @Transactional
+    void setup() {
+        itemRepository.deleteAll();
+        itemRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE Items AUTO_INCREMENT = 1")
+                .executeUpdate();
     }
 
-    @Test
-    public void getOrders() {
-        given()
-                .get("/items")
-                .then()
-                .statusCode(200)
-                .body("size()", is(1));
+    @Nested
+    @Tag("crud")
+    @DisplayName("user crud tests")
+    class ItemCrudTests {
+        @Test
+        @DisplayName("Create item")
+        public void create() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemCreateDto)
+                    .when()
+                    .post("/items")
+                    .then()
+                    .statusCode(200)
+                    .body("id", is(1))
+                    .body("price", is(50.0F))
+                    .body("name", is(itemCreateDto.getName()));
+        }
+
+        @Test
+        @DisplayName("Get list of items")
+        public void listItems() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemCreateDto)
+                    .when()
+                    .post("/items")
+                    .then()
+                    .statusCode(200)
+                    .body("id", is(2))
+                    .body("price", is(50.0F))
+                    .body("name", is(itemCreateDto.getName()));
+
+            given()
+                    .get("/items")
+                    .then()
+                    .statusCode(200)
+                    .body("size()", is(1));
+        }
+
+        @Test
+        @DisplayName("Get a item")
+        public void listItem() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemCreateDto)
+                    .when()
+                    .post("/items")
+                    .then()
+                    .statusCode(200)
+                    .body("id", is(4))
+                    .body("price", is(50.0F))
+                    .body("name", is(itemCreateDto.getName()));
+
+            given()
+                    .get("/items/4")
+                    .then()
+                    .statusCode(200)
+                    .body("id", is(4))
+                    .body("price", is(50.0F))
+                    .body("name", is(itemCreateDto.getName()));
+        }
+
+        @Test
+        public void updateItem() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemCreateDto)
+                    .when()
+                    .post("/items")
+                    .then()
+                    .statusCode(200)
+                    .body("id", is(3))
+                    .body("price", is(50.0F))
+                    .body("name", is(itemCreateDto.getName()));
+
+            ItemCreateDto itemUpdated = new ItemCreateDto(2, "copo");
+
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemUpdated)
+                    .when()
+                    .put("/items/" + 3)
+                    .then()
+                    .statusCode(200)
+                    .body("id", is(3))
+                    .body("price", is(2.0F))
+                    .body("name", is(itemUpdated.getName()));
+        }
+
+        @Test
+        public void updateItemNotFound() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemDto)
+                    .when()
+                    .put("/items/" + 10)
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        public void deleteItem() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemCreateDto)
+                    .when()
+                    .post("/items")
+                    .then()
+                    .statusCode(200)
+                    .body("id", is(5))
+                    .body("price", is(50.0F))
+                    .body("name", is(itemCreateDto.getName()));
+
+            given()
+                    .delete("/items/5")
+                    .then()
+                    .statusCode(204);
+
+        }
+
+        @Test
+        public void deleteOrderNotFound() {
+            given()
+                    .delete("/items/15")
+                    .then()
+                    .statusCode(400);
+        }
     }
 
-    @Test
-    public void getOrdersUserNotFound() {
-        given()
-                .get("/users/20/orders")
-                .then()
-                .statusCode(404);
-    }
 
-    @Test
-    public void updateOrder() {
-        Order order = new Order();
-        order.setTotal(100.0);
-        order.setId(2L);
-
-        given()
-                .header("Content-Type", "application/json")
-                .body(order)
-                .when()
-                .put("/users/2/orders/" + order.getId())
-                .then()
-                .statusCode(200)
-                .body("id", is(2))
-                .body("total", is(100.0F))
-                .body("orderDateTime", is(order.getOrderDatetime()));
-    }
-
-    @Test
-    public void updateOrderUserNotFound() {
-        Order order = new Order();
-        order.setTotal(100);
-        order.setId(2L);
-
-        given()
-                .header("Content-Type", "application/json")
-                .body(order)
-                .when()
-                .put("/users/3/orders/" + order.getId())
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void updateOrderNotFound() {
-        Order order = new Order();
-        order.setTotal(100);
-        order.setId(30L);
-
-        given()
-                .header("Content-Type", "application/json")
-                .body(order)
-                .when()
-                .put("/users/3/orders/" + order.getId())
-                .then()
-                .statusCode(404);
-    }
-
-    @Test
-    public void deleteOrder() {
-        given()
-                .delete("/users/1/orders/1")
-                .then()
-                .statusCode(204);
-
-    }
-
-    @Test
-    public void deleteOrderNotFound() {
-        given()
-                .delete("/users/1/orders/15")
-                .then()
-                .statusCode(404);
-    }
 }

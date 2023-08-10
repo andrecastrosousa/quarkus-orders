@@ -37,4 +37,22 @@ public class ItemResource {
     public ItemDto post(ItemCreateDto itemCreateDto) {
         return itemService.create(itemCreateDto);
     }
+
+    @PUT
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public ItemDto put(@PathParam("id") Long itemId, ItemDto itemDto) {
+        return itemService.update(itemId, itemDto);
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public void delete(@PathParam("id") Long itemId) {
+        itemService.delete(itemId);
+    }
 }

@@ -48,9 +48,7 @@ public class OrderItemResourceTest {
         orderRepository.persist(order);
         orderRepository.flush();
 
-        Item item = new Item();
-        item.setName("copo");
-        item.setPrice(2);
+        Item item = new Item("copo", 2);
         itemRepository.persist(item);
         itemRepository.flush();
     }
@@ -66,10 +64,8 @@ public class OrderItemResourceTest {
 
     @Test
     public void addItemToOrder() {
-        Item item = new Item();
+        Item item = new Item("copo", 2);
         item.setId(1L);
-        item.setName("copo");
-        item.setPrice(2);
 
         OrderItemAddDto orderItemAddDto = new OrderItemAddDto();
         orderItemAddDto.setItem(item);

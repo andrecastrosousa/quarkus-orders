@@ -1,14 +1,19 @@
 package academy.mindswap.dto;
 
 public class ItemCreateDto {
-    private Long price;
+    private double price;
     private String name;
 
-    public Long getPrice() {
+    public ItemCreateDto(double price, String name) {
+        this.price = price;
+        this.name = name;
+    }
+
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

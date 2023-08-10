@@ -7,6 +7,7 @@ import academy.mindswap.model.Item;
 import academy.mindswap.repository.ItemRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
 
 import java.util.List;
 
@@ -33,5 +34,28 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto findById(Long id) {
         return itemConverter.toDto(itemRepository.findById(id));
+    }
+
+    @Override
+    public ItemDto update(Long id, ItemDto itemDto) {
+        Item item = itemRepository.findById(id);
+        if(item == null) {
+            throw new WebApplicationException("Item not found", 400);
+        }
+
+        item.setName(itemDto.getName());
+        item.setPrice(itemDto.getPrice());
+
+        return itemConverter.toDto(item);
+    }
+
+    @Override
+    public void delete(Long id) {
+        Item item = itemRepository.findById(id);
+        if(item == null) {
+            throw new WebApplicationException("Item not found", 400);
+        }
+
+        itemRepository.delete(item);
     }
 }

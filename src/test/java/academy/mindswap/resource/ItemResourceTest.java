@@ -1,6 +1,5 @@
 package academy.mindswap.resource;
 
-import academy.mindswap.converter.ItemConverter;
 import academy.mindswap.dto.ItemCreateDto;
 import academy.mindswap.dto.ItemDto;
 import academy.mindswap.repository.ItemRepository;
@@ -18,9 +17,6 @@ public class ItemResourceTest {
     @Inject
     ItemRepository itemRepository;
 
-    @Inject
-    ItemConverter itemConverter;
-
     ItemDto itemDto = new ItemDto(1L, 50.0F, "toalha");
 
     ItemCreateDto itemCreateDto = new ItemCreateDto(50.0F, "toalha");
@@ -35,11 +31,49 @@ public class ItemResourceTest {
     }
 
     @Nested
+    @Tag("validations")
+    @DisplayName("user invalid crud")
+    class ItemCrudValidator {
+        @Test
+        @DisplayName("Get an item which not exists")
+        public void getItemNotFound() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemDto)
+                    .when()
+                    .put("/items/" + 10)
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Update an item which not exists")
+        public void updateItemNotFound() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(itemDto)
+                    .when()
+                    .put("/items/" + 10)
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Delete an item which not exists")
+        public void deleteOrderNotFound() {
+            given()
+                    .delete("/items/15")
+                    .then()
+                    .statusCode(400);
+        }
+    }
+
+    @Nested
     @Tag("crud")
-    @DisplayName("user crud tests")
+    @DisplayName("User valid crud")
     class ItemCrudTests {
         @Test
-        @DisplayName("Create item")
+        @DisplayName("Create an item")
         public void create() {
             given()
                     .header("Content-Type", "application/json")
@@ -75,7 +109,7 @@ public class ItemResourceTest {
         }
 
         @Test
-        @DisplayName("Get a item")
+        @DisplayName("Get an item")
         public void listItem() {
             given()
                     .header("Content-Type", "application/json")
@@ -98,6 +132,7 @@ public class ItemResourceTest {
         }
 
         @Test
+        @DisplayName("Update an item")
         public void updateItem() {
             given()
                     .header("Content-Type", "application/json")
@@ -124,18 +159,10 @@ public class ItemResourceTest {
                     .body("name", is(itemUpdated.getName()));
         }
 
-        @Test
-        public void updateItemNotFound() {
-            given()
-                    .header("Content-Type", "application/json")
-                    .body(itemDto)
-                    .when()
-                    .put("/items/" + 10)
-                    .then()
-                    .statusCode(400);
-        }
+
 
         @Test
+        @DisplayName("Delete an item")
         public void deleteItem() {
             given()
                     .header("Content-Type", "application/json")
@@ -154,15 +181,5 @@ public class ItemResourceTest {
                     .statusCode(204);
 
         }
-
-        @Test
-        public void deleteOrderNotFound() {
-            given()
-                    .delete("/items/15")
-                    .then()
-                    .statusCode(400);
-        }
     }
-
-
 }

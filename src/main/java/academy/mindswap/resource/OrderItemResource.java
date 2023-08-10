@@ -1,6 +1,9 @@
 package academy.mindswap.resource;
 
+import academy.mindswap.dto.OrderDto;
 import academy.mindswap.dto.OrderItemAddDto;
+import academy.mindswap.dto.OrderItemDto;
+import academy.mindswap.dto.OrderItemUpdateDto;
 import academy.mindswap.model.Item;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.OrderItem;
@@ -20,7 +23,7 @@ public class OrderItemResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<OrderItem> get(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId) {
+    public List<OrderItemDto> get(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId) {
         return orderItemService.getListOfOrderItem(userId, orderId);
     }
 
@@ -28,12 +31,21 @@ public class OrderItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Order addItemToOrder(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, OrderItemAddDto orderItemAddDto) {
-        try {
-            return orderItemService.addItemToOrder(userId, orderId, orderItemAddDto);
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
+    public OrderDto addItemToOrder(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, OrderItemAddDto orderItemAddDto) {
+        return orderItemService.addItemToOrder(userId, orderId, orderItemAddDto);
+    }
+
+    @PUT
+    @Path("/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public OrderDto updateItemOnOrder(
+            @PathParam("userId") Long userId,
+            @PathParam("orderId") Long orderId,
+            @PathParam("itemId") Long itemId,
+            OrderItemUpdateDto orderItemUpdateDto
+    ) {
+        return orderItemService.updateItemOnOrder(userId, orderId, itemId, orderItemUpdateDto);
     }
 }

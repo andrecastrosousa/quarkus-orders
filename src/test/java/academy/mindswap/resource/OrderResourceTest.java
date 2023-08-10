@@ -49,22 +49,21 @@ public class OrderResourceTest {
                 .executeUpdate();
 
         userRepository.persist(user);
-        userRepository.flush();
 
+        orderCreateDto.setOrderDatetime(LocalDateTime.now());
         Order order = orderConverter.toEntityFromCreateDto(orderCreateDto);
         order.setUser(user);
 
         orderRepository.persist(order);
-        orderRepository.flush();
     }
 
     @Nested
     @Tag("validations")
-    @DisplayName("order invalid crud")
+    @DisplayName("Orders invalid crud")
     class OrderCrudValidator {
         @Test
+        @DisplayName("Create an order from an invalid user")
         public void postUserNotFound() {
-
             given()
                     .header("Content-Type", "application/json")
                     .body(orderCreateDto)
@@ -75,6 +74,7 @@ public class OrderResourceTest {
         }
 
         @Test
+        @DisplayName("Get a list of orders from an invalid user")
         public void getOrdersUserNotFound() {
             given()
                     .get("/users/20/orders")
@@ -83,6 +83,7 @@ public class OrderResourceTest {
         }
 
         @Test
+        @DisplayName("Get an order not founded")
         public void getOrderNotFound() {
             given()
                     .get("/users/3/orders/30")
@@ -91,6 +92,7 @@ public class OrderResourceTest {
         }
 
         @Test
+        @DisplayName("Delete an order not founded")
         public void deleteOrderNotFound() {
             given()
                     .delete("/users/1/orders/15")
@@ -101,9 +103,10 @@ public class OrderResourceTest {
 
     @Nested
     @Tag("crud")
-    @DisplayName("order valid crud")
+    @DisplayName("Orders valid crud")
     class ItemCrudTests {
         @Test
+        @DisplayName("Create an order and associate to a user")
         public void post() {
             given()
                     .header("Content-Type", "application/json")
@@ -114,10 +117,11 @@ public class OrderResourceTest {
                     .statusCode(200)
                     .body("id", is(3))
                     .body("total", is(0.0F))
-                    .body("orderDateTime", is(orderCreateDto.getOrderDatetime()));
+                    .body("orderDatetime", is(orderCreateDto.getOrderDatetime().toString()));
         }
 
         @Test
+        @DisplayName("Get a list of orders associated to user")
         public void getOrders() {
             given()
                     .get("/users/1/orders")
@@ -127,6 +131,7 @@ public class OrderResourceTest {
         }
 
         @Test
+        @DisplayName("Delete an orders associated to a user")
         public void deleteOrder() {
             given()
                     .delete("/users/1/orders/1")

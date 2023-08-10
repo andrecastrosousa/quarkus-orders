@@ -1,6 +1,11 @@
 package academy.mindswap.service;
 
+import academy.mindswap.converter.OrderConverter;
+import academy.mindswap.converter.OrderItemConverter;
+import academy.mindswap.dto.OrderDto;
 import academy.mindswap.dto.OrderItemAddDto;
+import academy.mindswap.dto.OrderItemDto;
+import academy.mindswap.dto.OrderItemUpdateDto;
 import academy.mindswap.model.Item;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.OrderItem;
@@ -25,18 +30,24 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Inject
     ItemRepository itemRepository;
 
+    @Inject
+    OrderConverter orderConverter;
+
+    @Inject
+    OrderItemConverter orderItemConverter;
+
     @Override
-    public List<OrderItem> getListOfOrderItem(Long userId, Long orderId) {
+    public List<OrderItemDto> getListOfOrderItem(Long userId, Long orderId) {
         Order order = orderRepository.findById(orderId);
         if(order == null) {
             throw new WebApplicationException("Order not found", 400);
         }
 
-        return order.getOrderItems();
+        return order.getOrderItems().stream().map(orderItem -> orderItemConverter.toDto(orderItem)).toList();
     }
 
     @Override
-    public Order addItemToOrder(Long userId, Long orderId, OrderItemAddDto orderItemAddDto) {
+    public OrderDto addItemToOrder(Long userId, Long orderId, OrderItemAddDto orderItemAddDto) {
         Order order = orderRepository.findById(orderId);
         if(order == null) {
             throw new WebApplicationException("Order not found", 400);
@@ -52,12 +63,41 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItem.setItem(item);
         orderItem.setQuantity(orderItemAddDto.getQuantity());
 
+        order.setTotal(order.getTotal() + (item.getPrice() * orderItemAddDto.getQuantity()));
+
         orderItemRepository.persist(orderItem);
+        orderRepository.persist(order);
 
         List<OrderItem> orderItems = order.getOrderItems();
         orderItems.add(orderItem);
         order.setOrderItems(orderItems);
 
-        return order;
+        return orderConverter.toDto(order);
+    }
+
+    @Override
+    public OrderDto updateItemOnOrder(Long userId, Long orderId, Long itemId, OrderItemUpdateDto orderItemUpdateDto) {
+        Order order = orderRepository.findById(orderId);
+        if(order == null) {
+            throw new WebApplicationException("Order not found", 400);
+        }
+        Item item = itemRepository.findById(itemId);
+        if(item == null) {
+            throw new WebApplicationException("Item not found", 400);
+        }
+        OrderItem orderItem = orderItemRepository.findById(orderItemUpdateDto.getId());
+        if(orderItem == null) {
+            throw new WebApplicationException("Item not found", 400);
+        }
+
+        double itemPrice = orderItem.getItem().getPrice();
+        double totalToDecrement = itemPrice * orderItem.getQuantity();
+
+        orderItem.setQuantity(orderItemUpdateDto.getQuantity());
+        order.setTotal(order.getTotal() - totalToDecrement + (itemPrice * orderItem.getQuantity()));
+        orderItemRepository.persist(orderItem);
+        orderRepository.persist(order);
+
+        return orderConverter.toDto(order);
     }
 }

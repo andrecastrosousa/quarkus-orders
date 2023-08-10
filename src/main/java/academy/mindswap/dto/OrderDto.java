@@ -1,41 +1,30 @@
-package academy.mindswap.model;
+package academy.mindswap.dto;
 
+import academy.mindswap.model.OrderItem;
+import academy.mindswap.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Entity(name = "Orders")
-public class Order {
-    @Id
-    @GeneratedValue
+public class OrderDto {
     private Long id;
     private double total;
     private LocalDateTime orderDatetime;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderItem> orderItems;
 
-    @ManyToOne
-    @JsonIgnore
-    private User user;
-
-    public LocalDateTime getOrderDatetime() {
-        return orderDatetime;
+    public OrderDto(Long id) {
+        this.id = id;
+        this.total = 0;
     }
 
-    public void setOrderDatetime(LocalDateTime orderDatetime) {
+    public OrderDto(Long id, double total, LocalDateTime orderDatetime, List<OrderItem> orderItems) {
+        this.id = id;
+        this.total = total;
         this.orderDatetime = orderDatetime;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+        this.orderItems = orderItems;
     }
 
     public Long getId() {
@@ -52,6 +41,14 @@ public class Order {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public LocalDateTime getOrderDatetime() {
+        return orderDatetime;
+    }
+
+    public void setOrderDatetime(LocalDateTime orderDatetime) {
+        this.orderDatetime = orderDatetime;
     }
 
     public List<OrderItem> getOrderItems() {

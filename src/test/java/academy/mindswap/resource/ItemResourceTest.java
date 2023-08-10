@@ -32,7 +32,7 @@ public class ItemResourceTest {
 
     @Nested
     @Tag("validations")
-    @DisplayName("user invalid crud")
+    @DisplayName("item invalid crud")
     class ItemCrudValidator {
         @Test
         @DisplayName("Get an item which not exists")
@@ -60,7 +60,7 @@ public class ItemResourceTest {
 
         @Test
         @DisplayName("Delete an item which not exists")
-        public void deleteOrderNotFound() {
+        public void deleteItemNotFound() {
             given()
                     .delete("/items/15")
                     .then()
@@ -74,7 +74,7 @@ public class ItemResourceTest {
     class ItemCrudTests {
         @Test
         @DisplayName("Create an item")
-        public void create() {
+        public void createItem() {
             given()
                     .header("Content-Type", "application/json")
                     .body(itemCreateDto)

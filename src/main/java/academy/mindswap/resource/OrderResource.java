@@ -1,5 +1,7 @@
 package academy.mindswap.resource;
 
+import academy.mindswap.dto.OrderCreateDto;
+import academy.mindswap.dto.OrderDto;
 import academy.mindswap.model.Order;
 import academy.mindswap.service.OrderService;
 import jakarta.inject.Inject;
@@ -17,25 +19,23 @@ public class OrderResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Order> list(@PathParam("userId") Long userId) {
+    public List<OrderDto> list(@PathParam("userId") Long userId) {
         return orderService.listAll(userId);
+    }
+
+    @GET
+    @Path("/{orderId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public OrderDto get(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId) {
+        return orderService.findById(userId, orderId);
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public Order create(@PathParam("userId") Long userId, Order order) {
+    public OrderDto create(@PathParam("userId") Long userId, OrderCreateDto order) {
         return orderService.create(userId, order);
-    }
-
-    @PUT
-    @Path("/{orderId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Order update(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, Order order) {
-        return orderService.update(userId, orderId, order);
     }
 
     @DELETE
@@ -45,4 +45,12 @@ public class OrderResource {
         orderService.delete(userId, orderId);
     }
 
+    /*@PUT
+    @Path("/{orderId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Order update(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, Order order) {
+        return orderService.update(userId, orderId, order);
+    }*/
 }

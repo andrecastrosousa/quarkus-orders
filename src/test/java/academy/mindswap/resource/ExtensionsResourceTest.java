@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @QuarkusTest
 class ExtensionsResourceTest {
 
-
     @Test
     void whenGetById_thenReturnExtension() {
        given().when()

@@ -1,8 +1,13 @@
 package academy.mindswap.resource;
 
+import academy.mindswap.converter.ItemConverter;
 import academy.mindswap.dto.ItemCreateDto;
 import academy.mindswap.dto.ItemDto;
 import academy.mindswap.repository.ItemRepository;
+import academy.mindswap.repository.OrderItemRepository;
+import academy.mindswap.repository.OrderRepository;
+import academy.mindswap.repository.UserRepository;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -17,6 +22,18 @@ public class ItemResourceTest {
     @Inject
     ItemRepository itemRepository;
 
+    @Inject
+    ItemConverter itemConverter;
+
+    @Inject
+    OrderItemRepository orderItemRepository;
+
+    @Inject
+    OrderRepository orderRepository;
+
+    @Inject
+    UserRepository userRepository;
+
     ItemDto itemDto = new ItemDto(1L, 50.0F, "toalha");
 
     ItemCreateDto itemCreateDto = new ItemCreateDto(50.0F, "toalha");
@@ -24,10 +41,27 @@ public class ItemResourceTest {
     @BeforeEach
     @Transactional
     void setup() {
+        orderItemRepository.deleteAll();
+        orderItemRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE OrderItem AUTO_INCREMENT = 1")
+                .executeUpdate();
+
         itemRepository.deleteAll();
         itemRepository.getEntityManager()
                 .createNativeQuery("ALTER TABLE Items AUTO_INCREMENT = 1")
                 .executeUpdate();
+
+        orderRepository.deleteAll();
+        orderRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE Orders AUTO_INCREMENT = 1")
+                .executeUpdate();
+
+        userRepository.deleteAll();
+        userRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE Users AUTO_INCREMENT = 1")
+                .executeUpdate();
+
+        itemRepository.persist(itemConverter.toEntityFromCreateDto(itemCreateDto));
     }
 
     @Nested
@@ -82,7 +116,7 @@ public class ItemResourceTest {
                     .post("/items")
                     .then()
                     .statusCode(200)
-                    .body("id", is(4))
+                    .body("id", is(2))
                     .body("price", is(50.0F))
                     .body("name", is(itemCreateDto.getName()));
         }
@@ -90,17 +124,6 @@ public class ItemResourceTest {
         @Test
         @DisplayName("Get list of items")
         public void listItems() {
-            given()
-                    .header("Content-Type", "application/json")
-                    .body(itemCreateDto)
-                    .when()
-                    .post("/items")
-                    .then()
-                    .statusCode(200)
-                    .body("id", is(1))
-                    .body("price", is(50.0F))
-                    .body("name", is(itemCreateDto.getName()));
-
             given()
                     .get("/items")
                     .then()
@@ -112,21 +135,10 @@ public class ItemResourceTest {
         @DisplayName("Get an item")
         public void listItem() {
             given()
-                    .header("Content-Type", "application/json")
-                    .body(itemCreateDto)
-                    .when()
-                    .post("/items")
+                    .get("/items/1")
                     .then()
                     .statusCode(200)
-                    .body("id", is(3))
-                    .body("price", is(50.0F))
-                    .body("name", is(itemCreateDto.getName()));
-
-            given()
-                    .get("/items/3")
-                    .then()
-                    .statusCode(200)
-                    .body("id", is(3))
+                    .body("id", is(1))
                     .body("price", is(50.0F))
                     .body("name", is(itemCreateDto.getName()));
         }
@@ -134,27 +146,16 @@ public class ItemResourceTest {
         @Test
         @DisplayName("Update an item")
         public void updateItem() {
-            given()
-                    .header("Content-Type", "application/json")
-                    .body(itemCreateDto)
-                    .when()
-                    .post("/items")
-                    .then()
-                    .statusCode(200)
-                    .body("id", is(2))
-                    .body("price", is(50.0F))
-                    .body("name", is(itemCreateDto.getName()));
-
             ItemCreateDto itemUpdated = new ItemCreateDto(2, "copo");
 
             given()
                     .header("Content-Type", "application/json")
                     .body(itemUpdated)
                     .when()
-                    .put("/items/" + 2)
+                    .put("/items/" + 1)
                     .then()
                     .statusCode(200)
-                    .body("id", is(2))
+                    .body("id", is(1))
                     .body("price", is(2.0F))
                     .body("name", is(itemUpdated.getName()));
         }
@@ -163,19 +164,9 @@ public class ItemResourceTest {
         @Test
         @DisplayName("Delete an item")
         public void deleteItem() {
-            given()
-                    .header("Content-Type", "application/json")
-                    .body(itemCreateDto)
-                    .when()
-                    .post("/items")
-                    .then()
-                    .statusCode(200)
-                    .body("id", is(5))
-                    .body("price", is(50.0F))
-                    .body("name", is(itemCreateDto.getName()));
 
             given()
-                    .delete("/items/5")
+                    .delete("/items/1")
                     .then()
                     .statusCode(204);
 

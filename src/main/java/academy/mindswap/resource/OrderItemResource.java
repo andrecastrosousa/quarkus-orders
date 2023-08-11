@@ -23,7 +23,7 @@ public class OrderItemResource {
         return orderItemService.getListOfOrderItem(userId, orderId);
     }
 
-    @POST
+    @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional

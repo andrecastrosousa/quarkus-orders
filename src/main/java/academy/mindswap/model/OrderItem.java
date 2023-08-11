@@ -1,16 +1,15 @@
 package academy.mindswap.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity(name = "OrderItem")
 public class OrderItem {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @ManyToOne

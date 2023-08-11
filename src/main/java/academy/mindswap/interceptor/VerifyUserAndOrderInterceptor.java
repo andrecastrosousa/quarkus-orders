@@ -28,7 +28,6 @@ public class VerifyUserAndOrderInterceptor {
         Long orderId = (Long) ctx.getParameters()[1];
 
         User user = userRepository.findById(userId);
-
         if (user == null) {
             throw new WebApplicationException("User not found", 400);
         }
@@ -37,6 +36,7 @@ public class VerifyUserAndOrderInterceptor {
         if (order == null || !order.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 400);
         }
+
 
         return ctx.proceed();
     }

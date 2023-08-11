@@ -42,7 +42,27 @@ public class OrderItemResourceTest {
 
     @BeforeEach
     @Transactional
-    public void beforeEach() {
+    public void setup() {
+        orderItemRepository.deleteAll();
+        orderItemRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE OrderItem AUTO_INCREMENT = 1")
+                .executeUpdate();
+
+        itemRepository.deleteAll();
+        itemRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE Items AUTO_INCREMENT = 1")
+                .executeUpdate();
+
+        orderRepository.deleteAll();
+        orderRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE Orders AUTO_INCREMENT = 1")
+                .executeUpdate();
+
+        userRepository.deleteAll();
+        userRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE Users AUTO_INCREMENT = 1")
+                .executeUpdate();
+
         User user = new User("andré", "test@gmail.com");
         userRepository.persist(user);
 
@@ -59,7 +79,6 @@ public class OrderItemResourceTest {
         orderItem.setItem(item);
         orderItem.setQuantity(3);
         orderItemRepository.persist(orderItem);
-
     }
 
     @Nested
@@ -99,7 +118,7 @@ public class OrderItemResourceTest {
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .post("/users/1/orders/1/items")
+                    .put("/users/1/orders/1/items")
                     .then()
                     .statusCode(400);
         }
@@ -117,7 +136,7 @@ public class OrderItemResourceTest {
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .post("/users/1/orders/20/items")
+                    .put("/users/1/orders/20/items")
                     .then()
                     .statusCode(400);
         }
@@ -135,7 +154,7 @@ public class OrderItemResourceTest {
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .post("/users/20/orders/1/items")
+                    .put("/users/20/orders/1/items")
                     .then()
                     .statusCode(400);
         }
@@ -241,12 +260,12 @@ public class OrderItemResourceTest {
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .post("/users/1/orders/1/items")
+                    .put("/users/1/orders/1/items")
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
                     .body("total", is(10.0F))
-                    .body("orderItems.size()", is(1));
+                    .body("orderItems.size()", is(2));
 
         }
 

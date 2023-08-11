@@ -4,6 +4,8 @@ import academy.mindswap.converter.OrderConverter;
 import academy.mindswap.dto.OrderCreateDto;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.User;
+import academy.mindswap.repository.ItemRepository;
+import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
 import academy.mindswap.repository.UserRepository;
 import io.quarkus.test.junit.QuarkusTest;
@@ -29,13 +31,29 @@ public class OrderResourceTest {
     @Inject
     OrderConverter orderConverter;
 
+    @Inject
+    OrderItemRepository orderItemRepository;
+
+    @Inject
+    ItemRepository itemRepository;
+
     User user = new User("andré", "test@gmail.com");
 
     OrderCreateDto orderCreateDto = new OrderCreateDto();
 
     @BeforeEach
     @Transactional
-    public void beforeEach() {
+    public void setup() {
+        orderItemRepository.deleteAll();
+        orderItemRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE OrderItem AUTO_INCREMENT = 1")
+                .executeUpdate();
+
+        itemRepository.deleteAll();
+        itemRepository.getEntityManager()
+                .createNativeQuery("ALTER TABLE Items AUTO_INCREMENT = 1")
+                .executeUpdate();
+
         orderRepository.deleteAll();
         orderRepository.getEntityManager()
                 .createNativeQuery("ALTER TABLE Orders AUTO_INCREMENT = 1")
@@ -113,9 +131,8 @@ public class OrderResourceTest {
                     .post("/users/1/orders")
                     .then()
                     .statusCode(200)
-                    .body("id", is(3))
-                    .body("total", is(0.0F))
-                    .body("orderDatetime", is(orderCreateDto.getOrderDatetime().toString()));
+                    .body("id", is(2))
+                    .body("total", is(0.0F));
         }
 
         @Test

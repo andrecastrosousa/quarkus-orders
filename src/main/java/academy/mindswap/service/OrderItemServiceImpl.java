@@ -47,13 +47,11 @@ public class OrderItemServiceImpl implements OrderItemService {
     @VerifyUserAndOrder
     public OrderDto addItemToOrder(Long userId, Long orderId, OrderItemDto orderItemAddDto) {
         Order order = orderRepository.findById(orderId);
-        if (order == null) {
-            throw new WebApplicationException("Order not found", 400);
-        }
         Item item = itemRepository.findById(orderItemAddDto.getItem().getId());
         if (item == null) {
             throw new WebApplicationException("Item not found", 400);
         }
+
         OrderItem orderItem = orderItemRepository.findByOrderIdAndItemId(orderId, item.getId());
         if (orderItem != null) {
             int currentQuantity = orderItem.getQuantity();
@@ -64,7 +62,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                             currentQuantity,
                             currentQuantity + orderItemAddDto.getQuantity()
                     ));
-            orderItem.setQuantity(orderItemAddDto.getQuantity());
+            orderItem.setQuantity(currentQuantity + orderItemAddDto.getQuantity());
         } else {
             orderItem = new OrderItem();
             orderItem.setOrder(order);
@@ -73,8 +71,9 @@ public class OrderItemServiceImpl implements OrderItemService {
             order.setTotal(order.getTotal() + (item.getPrice() * orderItemAddDto.getQuantity()));
         }
 
-        orderItemRepository.persist(orderItem);
         orderRepository.persist(order);
+        orderItemRepository.persist(orderItem);
+
 
         List<OrderItem> orderItems = order.getOrderItems();
         orderItems.add(orderItem);

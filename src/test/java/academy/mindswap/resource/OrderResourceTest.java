@@ -86,7 +86,7 @@ public class OrderResourceTest {
             given()
                     .get("/users/3/orders/30")
                     .then()
-                    .statusCode(404);
+                    .statusCode(400);
         }
 
         @Test
@@ -95,7 +95,7 @@ public class OrderResourceTest {
             given()
                     .delete("/users/1/orders/15")
                     .then()
-                    .statusCode(404);
+                    .statusCode(400);
         }
     }
 

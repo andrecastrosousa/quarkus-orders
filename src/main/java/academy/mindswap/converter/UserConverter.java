@@ -13,11 +13,11 @@ public class UserConverter {
     @Inject
     ObjectMapper objectMapper;
 
-    public  UserDto toDto(User user) {
+    public UserDto toDto(User user) {
         return objectMapper.convertValue(user, UserDto.class);
     }
 
-    public  User fromDto(UserDto userDto) {
+    public User fromDto(UserDto userDto) {
         return User.builder()
                 .withId(userDto.getId())
                 .withName(userDto.getName())
@@ -25,7 +25,7 @@ public class UserConverter {
                 .build();
     }
 
-    public  User toEntityFromCreateDto(UserCreateDto userCreateDto) {
+    public User toEntityFromCreateDto(UserCreateDto userCreateDto) {
         return User.builder()
                 .withName(userCreateDto.getName())
                 .withEmail(userCreateDto.getEmail())

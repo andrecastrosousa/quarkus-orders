@@ -1,8 +1,6 @@
 package academy.mindswap.resource;
 
-import academy.mindswap.converter.OrderConverter;
-import academy.mindswap.dto.OrderCreateDto;
-import academy.mindswap.dto.OrderItemAddDto;
+import academy.mindswap.dto.OrderItemDto;
 import academy.mindswap.dto.OrderItemUpdateDto;
 import academy.mindswap.model.Item;
 import academy.mindswap.model.Order;
@@ -38,7 +36,7 @@ public class OrderItemResourceTest {
     @Inject
     OrderItemRepository orderItemRepository;
 
-    OrderItemAddDto orderItemAddDto = new OrderItemAddDto();
+    OrderItemDto orderItemAddDto = new OrderItemDto();
 
     OrderItemUpdateDto orderItemUpdateDto = new OrderItemUpdateDto();
 

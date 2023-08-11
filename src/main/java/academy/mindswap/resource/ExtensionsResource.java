@@ -15,6 +15,7 @@ public class ExtensionsResource {
 
     @Inject
     ExternalService externalService;
+
     @GET
     @Path("/id/{id}")
     @Consumes(MediaType.APPLICATION_JSON)

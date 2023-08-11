@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(Long id, ItemDto itemDto) {
         Item item = itemRepository.findById(id);
-        if(item == null) {
+        if (item == null) {
             throw new WebApplicationException("Item not found", 400);
         }
 
@@ -52,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void delete(Long id) {
         Item item = itemRepository.findById(id);
-        if(item == null) {
+        if (item == null) {
             throw new WebApplicationException("Item not found", 400);
         }
 

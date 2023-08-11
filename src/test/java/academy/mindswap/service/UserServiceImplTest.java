@@ -4,7 +4,6 @@ import academy.mindswap.converter.UserConverter;
 import academy.mindswap.dto.UserCreateDto;
 import academy.mindswap.model.User;
 import academy.mindswap.repository.UserRepository;
-import academy.mindswap.service.UserServiceImpl;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.component.QuarkusComponentTest;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.matches;
 
@@ -33,8 +30,8 @@ class UserServiceImplTest {
     UserConverter userConverter;
 
 
+    UserCreateDto valid_user = new UserCreateDto("test", "test@gmail.com", "Test1234", "Test1234");
 
-    UserCreateDto valid_user = new UserCreateDto("test","test@gmail.com", "Test1234", "Test1234");
     @BeforeEach
     void setUp() {
     }
@@ -48,7 +45,7 @@ class UserServiceImplTest {
         @SuppressWarnings("unchecked")
         //GIVEN
         PanacheQuery<User> panacheQueryMock = Mockito.mock(PanacheQuery.class);
-        UserCreateDto valid_user = new UserCreateDto("test","test@gmail.com", "Test1234", "Test1234");
+        UserCreateDto valid_user = new UserCreateDto("test", "test@gmail.com", "Test1234", "Test1234");
 
         //WHEN
         // Mock the userRepository.find() method to return a PanacheQuery mock
@@ -57,12 +54,12 @@ class UserServiceImplTest {
         //Mock the user converter to return a User object
         Mockito.when(userConverter.toEntityFromCreateDto(valid_user))
                 .thenReturn(new User(
-                valid_user.getName(),
-                valid_user.getEmail(),
-                valid_user.getPassword()
-        ));
+                        valid_user.getName(),
+                        valid_user.getEmail(),
+                        valid_user.getPassword()
+                ));
 
-       //Mockito.when(userRepository.persist(Mockito.any(User.class))).;
+        //Mockito.when(userRepository.persist(Mockito.any(User.class))).;
         // Call the userService.create() method
         userService.create(valid_user);
 

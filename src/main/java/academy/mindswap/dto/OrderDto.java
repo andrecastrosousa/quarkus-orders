@@ -1,10 +1,5 @@
 package academy.mindswap.dto;
 
-import academy.mindswap.model.OrderItem;
-import academy.mindswap.model.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,14 +8,14 @@ public class OrderDto {
     private double total;
     private LocalDateTime orderDatetime;
 
-    private List<OrderItem> orderItems;
+    private List<OrderItemDto> orderItems;
 
     public OrderDto(Long id) {
         this.id = id;
         this.total = 0;
     }
 
-    public OrderDto(Long id, double total, LocalDateTime orderDatetime, List<OrderItem> orderItems) {
+    public OrderDto(Long id, double total, LocalDateTime orderDatetime, List<OrderItemDto> orderItems) {
         this.id = id;
         this.total = total;
         this.orderDatetime = orderDatetime;
@@ -51,11 +46,11 @@ public class OrderDto {
         this.orderDatetime = orderDatetime;
     }
 
-    public List<OrderItem> getOrderItems() {
+    public List<OrderItemDto> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderItems(List<OrderItemDto> orderItems) {
         this.orderItems = orderItems;
     }
 }

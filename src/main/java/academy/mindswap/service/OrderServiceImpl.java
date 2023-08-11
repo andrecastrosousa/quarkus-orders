@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderDto> listAll(Long userId) {
         User user = userRepository.findById(userId);
-        if(user == null) {
+        if (user == null) {
             throw new WebApplicationException("User not found", 404);
         }
         return orderRepository.findByUserId(userId).stream()
@@ -38,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto findById(Long userId, Long orderId) {
         Order orderFound = orderRepository.findById(orderId);
-        if(orderFound == null || !orderFound.getUser().getId().equals(userId)) {
+        if (orderFound == null || !orderFound.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 404);
         }
 
@@ -48,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto create(Long userId, OrderCreateDto orderCreateDto) {
         User user = userRepository.findById(userId);
-        if(user == null) {
+        if (user == null) {
             throw new WebApplicationException("User not found", 404);
         }
 
@@ -63,10 +63,10 @@ public class OrderServiceImpl implements OrderService {
     public void delete(Long userId, Long orderId) {
         Order orderFound = orderRepository.findById(orderId);
 
-        if(orderFound == null) {
+        if (orderFound == null) {
             throw new WebApplicationException("Order not found", 404);
         }
-        if(!orderFound.getUser().getId().equals(userId)) {
+        if (!orderFound.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 404);
         }
 

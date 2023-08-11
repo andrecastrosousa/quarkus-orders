@@ -2,7 +2,6 @@ package academy.mindswap.resource;
 
 import academy.mindswap.converter.OrderConverter;
 import academy.mindswap.dto.OrderCreateDto;
-import academy.mindswap.dto.OrderDto;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.User;
 import academy.mindswap.repository.OrderRepository;
@@ -13,7 +12,6 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;

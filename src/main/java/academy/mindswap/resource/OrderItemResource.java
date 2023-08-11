@@ -1,12 +1,8 @@
 package academy.mindswap.resource;
 
 import academy.mindswap.dto.OrderDto;
-import academy.mindswap.dto.OrderItemAddDto;
 import academy.mindswap.dto.OrderItemDto;
 import academy.mindswap.dto.OrderItemUpdateDto;
-import academy.mindswap.model.Item;
-import academy.mindswap.model.Order;
-import academy.mindswap.model.OrderItem;
 import academy.mindswap.service.OrderItemService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -31,7 +27,7 @@ public class OrderItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
-    public OrderDto addItemToOrder(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, OrderItemAddDto orderItemAddDto) {
+    public OrderDto addItemToOrder(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, OrderItemDto orderItemAddDto) {
         return orderItemService.addItemToOrder(userId, orderId, orderItemAddDto);
     }
 

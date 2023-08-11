@@ -1,6 +1,5 @@
 package academy.mindswap.interceptor;
 
-
 import jakarta.interceptor.InterceptorBinding;
 
 import java.lang.annotation.Documented;
@@ -11,9 +10,9 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({TYPE, METHOD})
+@Target({METHOD, TYPE})
 @Retention(RUNTIME)
 @Documented
 @InterceptorBinding
-public @interface Logging {
+public @interface VerifyUserAndOrder {
 }

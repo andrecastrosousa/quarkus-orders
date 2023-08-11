@@ -1,6 +1,5 @@
 package academy.mindswap.resource;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 

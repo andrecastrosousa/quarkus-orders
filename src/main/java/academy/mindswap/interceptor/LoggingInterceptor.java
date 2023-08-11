@@ -1,10 +1,11 @@
 package academy.mindswap.interceptor;
-import java.util.concurrent.atomic.AtomicReference;
 
 import jakarta.annotation.Priority;
 import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 @Logging
 @Priority(10)

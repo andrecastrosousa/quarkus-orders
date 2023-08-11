@@ -35,6 +35,9 @@ public class User {
         this.password = password;
     }
 
+    public static UserBuilder builder() {
+        return new UserBuilder();
+    }
 
     public String getPassword() {
         return password;
@@ -74,10 +77,6 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public static UserBuilder builder() {
-        return new UserBuilder();
     }
 
     public static final class UserBuilder {

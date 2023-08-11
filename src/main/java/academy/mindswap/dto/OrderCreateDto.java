@@ -1,7 +1,5 @@
 package academy.mindswap.dto;
 
-import academy.mindswap.model.User;
-
 import java.time.LocalDateTime;
 
 public class OrderCreateDto {

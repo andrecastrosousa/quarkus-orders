@@ -8,10 +8,8 @@ import academy.mindswap.model.User;
 import academy.mindswap.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -45,10 +43,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Logging
     public UserDto create(UserCreateDto userCreateDto) {
-        if(!userCreateDto.getPassword().equals(userCreateDto.getRetypePassword())) {
+        if (!userCreateDto.getPassword().equals(userCreateDto.getRetypePassword())) {
             throw new WebApplicationException("Passwords do not match", 400);
         }
-        if(userRepository.find("email", userCreateDto.getEmail()).firstResultOptional().isPresent()) {
+        if (userRepository.find("email", userCreateDto.getEmail()).firstResultOptional().isPresent()) {
             throw new WebApplicationException("Email already exists", 400);
         }
 

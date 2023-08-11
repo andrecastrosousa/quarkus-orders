@@ -1,7 +1,5 @@
 package academy.mindswap.dto;
 
-import academy.mindswap.model.Item;
-
 public class OrderItemUpdateDto {
     private Long id;
     private int quantity;

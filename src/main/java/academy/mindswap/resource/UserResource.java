@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("/users")
@@ -19,6 +18,7 @@ public class UserResource {
 
     @Inject
     UserService userService;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<User> get() {
@@ -39,7 +39,7 @@ public class UserResource {
     @Path("/bulk")
     @Transactional
     public List<UserDto> post(List<UserCreateDto> users) {
-       return userService.create(users);
+        return userService.create(users);
     }
 
     @DELETE
@@ -53,7 +53,7 @@ public class UserResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public User get(@PathParam("id") Long id) {
-         return userService.getById(id);
+        return userService.getById(id);
     }
 
     @PUT
@@ -63,11 +63,6 @@ public class UserResource {
     public User get(@PathParam("id") Long id, User user) {
         return userService.update(id, user);
     }
-
-
-
-
-
 
 
 }

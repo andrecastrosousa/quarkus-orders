@@ -1,6 +1,8 @@
 package academy.mindswap.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 @Entity(name = "Items")
 public class Item {

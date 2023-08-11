@@ -82,7 +82,7 @@ public class ItemResourceTest {
                     .post("/items")
                     .then()
                     .statusCode(200)
-                    .body("id", is(1))
+                    .body("id", is(4))
                     .body("price", is(50.0F))
                     .body("name", is(itemCreateDto.getName()));
         }
@@ -97,7 +97,7 @@ public class ItemResourceTest {
                     .post("/items")
                     .then()
                     .statusCode(200)
-                    .body("id", is(2))
+                    .body("id", is(1))
                     .body("price", is(50.0F))
                     .body("name", is(itemCreateDto.getName()));
 
@@ -118,15 +118,15 @@ public class ItemResourceTest {
                     .post("/items")
                     .then()
                     .statusCode(200)
-                    .body("id", is(4))
+                    .body("id", is(3))
                     .body("price", is(50.0F))
                     .body("name", is(itemCreateDto.getName()));
 
             given()
-                    .get("/items/4")
+                    .get("/items/3")
                     .then()
                     .statusCode(200)
-                    .body("id", is(4))
+                    .body("id", is(3))
                     .body("price", is(50.0F))
                     .body("name", is(itemCreateDto.getName()));
         }
@@ -141,7 +141,7 @@ public class ItemResourceTest {
                     .post("/items")
                     .then()
                     .statusCode(200)
-                    .body("id", is(3))
+                    .body("id", is(2))
                     .body("price", is(50.0F))
                     .body("name", is(itemCreateDto.getName()));
 
@@ -151,14 +151,13 @@ public class ItemResourceTest {
                     .header("Content-Type", "application/json")
                     .body(itemUpdated)
                     .when()
-                    .put("/items/" + 3)
+                    .put("/items/" + 2)
                     .then()
                     .statusCode(200)
-                    .body("id", is(3))
+                    .body("id", is(2))
                     .body("price", is(2.0F))
                     .body("name", is(itemUpdated.getName()));
         }
-
 
 
         @Test

@@ -2,7 +2,6 @@ package academy.mindswap.resource;
 
 import academy.mindswap.dto.OrderCreateDto;
 import academy.mindswap.dto.OrderDto;
-import academy.mindswap.model.Order;
 import academy.mindswap.service.OrderService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

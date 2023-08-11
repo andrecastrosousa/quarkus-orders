@@ -53,23 +53,16 @@ public class OrderItemServiceImpl implements OrderItemService {
         }
 
         OrderItem orderItem = orderItemRepository.findByOrderIdAndItemId(orderId, item.getId());
+        int currentQuantity = 0;
         if (orderItem != null) {
-            int currentQuantity = orderItem.getQuantity();
-            order.setTotal(
-                    recalculateTotal(
-                            order,
-                            item,
-                            currentQuantity,
-                            currentQuantity + orderItemAddDto.getQuantity()
-                    ));
-            orderItem.setQuantity(currentQuantity + orderItemAddDto.getQuantity());
+            currentQuantity = orderItem.getQuantity();
         } else {
             orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setItem(item);
-            orderItem.setQuantity(orderItemAddDto.getQuantity());
-            order.setTotal(order.getTotal() + (item.getPrice() * orderItemAddDto.getQuantity()));
         }
+        order.setTotal(recalculateTotal(order, item, currentQuantity, orderItemAddDto.getQuantity()));
+        orderItem.setQuantity(orderItemAddDto.getQuantity());
 
         orderRepository.persist(order);
         orderItemRepository.persist(orderItem);
@@ -132,10 +125,11 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItemRepository.delete(orderItem);
     }
 
-    private double recalculateTotal(Order order, Item item, int previousQuantity, int quantity) {
+    protected double recalculateTotal(Order order, Item item, int previousQuantity, int newQuantity) {
         double itemPrice = item.getPrice();
         double totalToDecrement = itemPrice * previousQuantity;
+        double totalToIncrement = itemPrice * newQuantity;
 
-        return order.getTotal() - totalToDecrement + (itemPrice * quantity);
+        return order.getTotal() - totalToDecrement + totalToIncrement;
     }
 }

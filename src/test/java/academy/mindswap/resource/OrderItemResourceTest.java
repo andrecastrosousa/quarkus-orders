@@ -38,9 +38,6 @@ public class OrderItemResourceTest {
     @Inject
     OrderItemRepository orderItemRepository;
 
-    @Inject
-    OrderConverter orderConverter;
-
     OrderItemAddDto orderItemAddDto = new OrderItemAddDto();
 
     OrderItemUpdateDto orderItemUpdateDto = new OrderItemUpdateDto();
@@ -51,10 +48,9 @@ public class OrderItemResourceTest {
         User user = new User("andré", "test@gmail.com");
         userRepository.persist(user);
 
-        OrderCreateDto orderCreateDto = new OrderCreateDto();
-        orderCreateDto.setOrderDatetime(LocalDateTime.now());
-        Order order = orderConverter.toEntityFromCreateDto(orderCreateDto);
+        Order order = new Order();
         order.setUser(user);
+        order.setOrderDatetime(LocalDateTime.now());
         orderRepository.persist(order);
 
         Item item = new Item("copo", 2);
@@ -66,6 +62,157 @@ public class OrderItemResourceTest {
         orderItem.setQuantity(3);
         orderItemRepository.persist(orderItem);
 
+    }
+
+    @Nested
+    @Tag("errors")
+    @DisplayName("Errors on Items of order CRUD")
+    class OrderItemErrorCrud {
+        @Test
+        @DisplayName("List items of a non existent order")
+        public void listItemsOfNonExistentOrder() {
+            given()
+                    .when()
+                    .get("/users/1/orders/20/items")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("List items of a non existent user")
+        public void listItemsOfNonExistentUser() {
+            given()
+                    .when()
+                    .get("/users/20/orders/1/items")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Add a non existent item to an order")
+        public void addNonExistentItemToOrder() {
+            Item item = new Item("copo", 2);
+            item.setId(20L);
+
+            orderItemAddDto.setItem(item);
+            orderItemAddDto.setQuantity(5);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemAddDto)
+                    .when()
+                    .post("/users/1/orders/1/items")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Add item to a non existent order")
+        public void addItemToNonExistentOrder() {
+            Item item = new Item("copo", 2);
+            item.setId(1L);
+
+            orderItemAddDto.setItem(item);
+            orderItemAddDto.setQuantity(5);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemAddDto)
+                    .when()
+                    .post("/users/1/orders/20/items")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Add Item to a non existent user")
+        public void addItemToNonExistentUser() {
+            Item item = new Item("copo", 2);
+            item.setId(1L);
+
+            orderItemAddDto.setItem(item);
+            orderItemAddDto.setQuantity(5);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemAddDto)
+                    .when()
+                    .post("/users/20/orders/1/items")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Update a non existent item on order")
+        public void updateNonExistentItemOnOrder() {
+            orderItemUpdateDto.setId(1L);
+            orderItemUpdateDto.setQuantity(3);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemUpdateDto)
+                    .when()
+                    .put("/users/1/orders/1/items/20")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Update item on non existent user")
+        public void updateItemOnNonExistentUser() {
+            orderItemUpdateDto.setId(1L);
+            orderItemUpdateDto.setQuantity(3);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemUpdateDto)
+                    .when()
+                    .put("/users/20/orders/1/items/1")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Update item on non existent order")
+        public void updateItemOnNonExistentOrder() {
+            orderItemUpdateDto.setId(1L);
+            orderItemUpdateDto.setQuantity(3);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemUpdateDto)
+                    .when()
+                    .put("/users/1/orders/20/items/1")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Remove a non existent item from order")
+        public void removeItemFromOrder() {
+            given()
+                    .delete("/users/1/orders/1/items/20")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Remove item from non existent user")
+        public void removeItemFromNonExistentUser() {
+            given()
+                    .delete("/users/20/orders/1/items/1")
+                    .then()
+                    .statusCode(400);
+        }
+
+        @Test
+        @DisplayName("Remove item from non existent order")
+        public void removeItemFromNonExistentOrder() {
+            given()
+                    .delete("/users/1/orders/20/items/1")
+                    .then()
+                    .statusCode(400);
+        }
     }
 
     @Nested

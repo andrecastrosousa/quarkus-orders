@@ -9,9 +9,11 @@ import academy.mindswap.dto.OrderItemUpdateDto;
 import academy.mindswap.model.Item;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.OrderItem;
+import academy.mindswap.model.User;
 import academy.mindswap.repository.ItemRepository;
 import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
+import academy.mindswap.repository.UserRepository;
 import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -33,6 +35,9 @@ public class OrderItemServiceImpl implements OrderItemService {
     ItemRepository itemRepository;
 
     @Inject
+    UserRepository userRepository;
+
+    @Inject
     OrderConverter orderConverter;
 
     @Inject
@@ -40,8 +45,14 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public List<OrderItemDto> getListOfOrderItem(Long userId, Long orderId) {
+        User user = userRepository.findById(userId);
+
+        if(user == null) {
+            throw new WebApplicationException("User not found", 400);
+        }
+
         Order order = orderRepository.findById(orderId);
-        if(order == null) {
+        if(order == null || !order.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 400);
         }
 
@@ -50,8 +61,14 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderDto addItemToOrder(Long userId, Long orderId, OrderItemAddDto orderItemAddDto) {
+        User user = userRepository.findById(userId);
+
+        if(user == null) {
+            throw new WebApplicationException("User not found", 400);
+        }
+
         Order order = orderRepository.findById(orderId);
-        if(order == null) {
+        if(order == null || !order.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 400);
         }
 
@@ -79,8 +96,14 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     public OrderDto updateItemOnOrder(Long userId, Long orderId, Long itemId, OrderItemUpdateDto orderItemUpdateDto) {
+        User user = userRepository.findById(userId);
+
+        if(user == null) {
+            throw new WebApplicationException("User not found", 400);
+        }
+
         Order order = orderRepository.findById(orderId);
-        if(order == null) {
+        if(order == null || !order.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 400);
         }
         Item item = itemRepository.findById(itemId);
@@ -106,8 +129,14 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     @Transactional
     public void removeItemFromOrder(Long userId, Long orderId, Long itemId) {
+        User user = userRepository.findById(userId);
+
+        if(user == null) {
+            throw new WebApplicationException("User not found", 400);
+        }
+
         Order order = orderRepository.findById(orderId);
-        if(order == null) {
+        if(order == null || !order.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 400);
         }
         Item item = itemRepository.findById(itemId);

@@ -48,4 +48,14 @@ public class OrderItemResource {
     ) {
         return orderItemService.updateItemOnOrder(userId, orderId, itemId, orderItemUpdateDto);
     }
+
+    @DELETE
+    @Path("/{itemId}")
+    public void removeItemFromOrder(
+            @PathParam("userId") Long userId,
+            @PathParam("orderId") Long orderId,
+            @PathParam("itemId") Long itemId
+    ) {
+        orderItemService.removeItemFromOrder(userId, orderId, itemId);
+    }
 }

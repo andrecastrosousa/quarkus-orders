@@ -12,8 +12,10 @@ import academy.mindswap.model.OrderItem;
 import academy.mindswap.repository.ItemRepository;
 import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
+import io.quarkus.panache.common.Parameters;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 
 import java.util.List;
@@ -85,7 +87,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         if(item == null) {
             throw new WebApplicationException("Item not found", 400);
         }
-        OrderItem orderItem = orderItemRepository.findById(orderItemUpdateDto.getId());
+        OrderItem orderItem = orderItemRepository.findByOrderIdAndItemId(orderId, itemId);
         if(orderItem == null) {
             throw new WebApplicationException("Item not found", 400);
         }
@@ -99,5 +101,24 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderRepository.persist(order);
 
         return orderConverter.toDto(order);
+    }
+
+    @Override
+    @Transactional
+    public void removeItemFromOrder(Long userId, Long orderId, Long itemId) {
+        Order order = orderRepository.findById(orderId);
+        if(order == null) {
+            throw new WebApplicationException("Order not found", 400);
+        }
+        Item item = itemRepository.findById(itemId);
+        if(item == null) {
+            throw new WebApplicationException("Item not found", 400);
+        }
+        OrderItem orderItem = orderItemRepository.findByOrderIdAndItemId(orderId, itemId);
+        if(orderItem == null) {
+            throw new WebApplicationException("Item on order not found", 400);
+        }
+
+        orderItemRepository.delete(orderItem);
     }
 }

@@ -12,8 +12,7 @@ import java.util.List;
 
 public interface OrderItemService {
     List<OrderItemDto> getListOfOrderItem(Long userId, Long orderId);
-
     OrderDto addItemToOrder(Long userId, Long orderId, OrderItemAddDto orderItemAddDto);
-
     OrderDto updateItemOnOrder(Long userId, Long orderId, Long itemId, OrderItemUpdateDto OrderItemUpdateDto);
+    void removeItemFromOrder(Long userId, Long orderId, Long itemId);
 }

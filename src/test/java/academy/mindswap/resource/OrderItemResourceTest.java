@@ -6,8 +6,10 @@ import academy.mindswap.dto.OrderItemAddDto;
 import academy.mindswap.dto.OrderItemUpdateDto;
 import academy.mindswap.model.Item;
 import academy.mindswap.model.Order;
+import academy.mindswap.model.OrderItem;
 import academy.mindswap.model.User;
 import academy.mindswap.repository.ItemRepository;
+import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
 import academy.mindswap.repository.UserRepository;
 import io.quarkus.test.junit.QuarkusTest;
@@ -34,6 +36,9 @@ public class OrderItemResourceTest {
     ItemRepository itemRepository;
 
     @Inject
+    OrderItemRepository orderItemRepository;
+
+    @Inject
     OrderConverter orderConverter;
 
     OrderItemAddDto orderItemAddDto = new OrderItemAddDto();
@@ -54,6 +59,13 @@ public class OrderItemResourceTest {
 
         Item item = new Item("copo", 2);
         itemRepository.persist(item);
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrder(order);
+        orderItem.setItem(item);
+        orderItem.setQuantity(3);
+        orderItemRepository.persist(orderItem);
+
     }
 
     @Nested
@@ -61,6 +73,7 @@ public class OrderItemResourceTest {
     @DisplayName("Items of order CRUD")
     class OrderItemCrudTests {
         @Test
+        @DisplayName("List items of an order")
         public void listItemsOfOrder() {
             given()
                     .when()
@@ -71,6 +84,7 @@ public class OrderItemResourceTest {
         }
 
         @Test
+        @DisplayName("Add Item to Order")
         public void addItemToOrder() {
             Item item = new Item("copo", 2);
             item.setId(1L);
@@ -92,6 +106,7 @@ public class OrderItemResourceTest {
         }
 
         @Test
+        @DisplayName("Update Item on Order")
         public void updateItemOnOrder() {
             orderItemUpdateDto.setId(1L);
             orderItemUpdateDto.setQuantity(3);
@@ -106,7 +121,22 @@ public class OrderItemResourceTest {
                     .body("id", is(1))
                     .body("total", is(6.0F))
                     .body("orderItems.size()", is(1));
+        }
 
+        @Test
+        @DisplayName("Remove Item from Order")
+        public void removeItemFromOrder() {
+            given()
+                    .when()
+                    .get("/users/1/orders/1/items")
+                    .then()
+                    .statusCode(200)
+                    .body("size()", is(1));
+
+            given()
+                    .delete("/users/1/orders/1/items/1")
+                    .then()
+                    .statusCode(204);
         }
     }
 }

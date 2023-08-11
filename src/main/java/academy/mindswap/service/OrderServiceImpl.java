@@ -3,6 +3,7 @@ package academy.mindswap.service;
 import academy.mindswap.converter.OrderConverter;
 import academy.mindswap.dto.OrderCreateDto;
 import academy.mindswap.dto.OrderDto;
+import academy.mindswap.interceptor.VerifyUserAndOrder;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.User;
 import academy.mindswap.repository.OrderRepository;
@@ -30,15 +31,16 @@ public class OrderServiceImpl implements OrderService {
         if (user == null) {
             throw new WebApplicationException("User not found", 404);
         }
-        return orderRepository.findByUserId(userId).stream()
+        return user.getOrders().stream()
                 .map(order -> orderConverter.toDto(order))
                 .toList();
     }
 
     @Override
+    @VerifyUserAndOrder
     public OrderDto findById(Long userId, Long orderId) {
         Order orderFound = orderRepository.findById(orderId);
-        if (orderFound == null || !orderFound.getUser().getId().equals(userId)) {
+        if (orderFound == null) {
             throw new WebApplicationException("Order not found", 404);
         }
 
@@ -60,13 +62,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @VerifyUserAndOrder
     public void delete(Long userId, Long orderId) {
         Order orderFound = orderRepository.findById(orderId);
-
         if (orderFound == null) {
-            throw new WebApplicationException("Order not found", 404);
-        }
-        if (!orderFound.getUser().getId().equals(userId)) {
             throw new WebApplicationException("Order not found", 404);
         }
 
@@ -74,10 +73,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /*@Override
+    @VerifyUserAndOrder
     public OrderDto update(Long userId, Long orderId, Order order) {
         Order orderFound = orderRepository.findById(orderId);
 
-        if(orderFound == null || !order.getId().equals(orderId) || !orderFound.getUser().getId().equals(userId)) {
+        if(orderFound == null || !order.getId().equals(orderId)) {
             throw new WebApplicationException("Order not found", 404);
         }
 

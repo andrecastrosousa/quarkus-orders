@@ -1,5 +1,8 @@
 package academy.mindswap.model;
 
+import io.quarkus.security.jpa.Password;
+import io.quarkus.security.jpa.Roles;
+import io.quarkus.security.jpa.Username;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -15,8 +18,12 @@ public class User {
     private Long id;
 
     private String name;
+    @Username
     private String email;
+    @Password
     private String password;
+    @Roles
+    private String role;
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
@@ -79,10 +86,18 @@ public class User {
         this.id = id;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public static final class UserBuilder {
         private final User user;
 
-        public UserBuilder() {
+        private UserBuilder() {
             user = new User();
         }
 
@@ -103,6 +118,11 @@ public class User {
 
         public UserBuilder withPassword(String password) {
             user.setPassword(password);
+            return this;
+        }
+
+        public UserBuilder withRole(String role) {
+            user.setRole(role);
             return this;
         }
 

@@ -7,7 +7,6 @@ import academy.mindswap.repository.ItemRepository;
 import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
 import academy.mindswap.repository.UserRepository;
-import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;

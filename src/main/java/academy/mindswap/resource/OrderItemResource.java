@@ -25,7 +25,6 @@ public class OrderItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
     public List<OrderItemDto> get(@PathParam("orderId") Long orderId, @Context SecurityContext securityContext) {
-        System.out.println(securityContext.getUserPrincipal().getName());
         return orderItemService.getListOfOrderItem(1L, orderId);
     }
 

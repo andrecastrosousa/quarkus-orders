@@ -10,10 +10,12 @@ import academy.mindswap.repository.ItemRepository;
 import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
 import academy.mindswap.repository.UserRepository;
+import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
@@ -253,11 +255,11 @@ public class OrderItemResourceTest {
         @DisplayName("List items of an order")
         public void listItemsOfOrder() {
             given()
-                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
+                    .auth().preemptive().basic("andré@gmail.com", "ola123")
                     .get("/orders/1/items")
                     .then()
-                    .statusCode(200)
+                    .statusCode(HttpStatus.SC_OK)
                     .body("size()", is(1));
         }
 
@@ -306,10 +308,6 @@ public class OrderItemResourceTest {
         @Test
         @DisplayName("Remove Item from Order")
         public void removeItemFromOrder() {
-            System.out.println(user.getRole());
-
-            System.out.println();
-
             given().
                     auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()

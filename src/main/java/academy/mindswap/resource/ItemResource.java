@@ -3,7 +3,6 @@ package academy.mindswap.resource;
 import academy.mindswap.dto.ItemCreateDto;
 import academy.mindswap.dto.ItemDto;
 import academy.mindswap.service.ItemService;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -20,7 +19,7 @@ public class ItemResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @PermitAll
+    @RolesAllowed("**")
     public List<ItemDto> get() {
         return itemService.getAll();
     }
@@ -28,7 +27,7 @@ public class ItemResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @PermitAll
+    @RolesAllowed("**")
     public ItemDto get(@PathParam("id") Long itemId) {
         return itemService.findById(itemId);
     }

@@ -39,6 +39,8 @@ public class OrderResourceTest {
 
     User user = new User("andré", "andre@gmail.com", "ola123");
 
+    User admin = new User("admin", "admin@admin.pt", "123");
+
     OrderCreateDto orderCreateDto = new OrderCreateDto();
 
     @BeforeEach
@@ -79,7 +81,7 @@ public class OrderResourceTest {
                     .header("Content-Type", "application/json")
                     .body(orderCreateDto)
                     .when()
-                    .post("/users/10/orders")
+                    .post("/orders")
                     .then()
                     .statusCode(404);
         }
@@ -88,7 +90,7 @@ public class OrderResourceTest {
         @DisplayName("Get a list of orders from an invalid user")
         public void getOrdersUserNotFound() {
             given()
-                    .get("/users/20/orders")
+                    .get("/orders")
                     .then()
                     .statusCode(404);
         }
@@ -97,7 +99,7 @@ public class OrderResourceTest {
         @DisplayName("Get an order not founded")
         public void getOrderNotFound() {
             given()
-                    .get("/users/3/orders/30")
+                    .get("/orders/30")
                     .then()
                     .statusCode(400);
         }
@@ -106,7 +108,7 @@ public class OrderResourceTest {
         @DisplayName("Delete an order not founded")
         public void deleteOrderNotFound() {
             given()
-                    .delete("/users/1/orders/15")
+                    .delete("/orders/15")
                     .then()
                     .statusCode(400);
         }
@@ -123,7 +125,7 @@ public class OrderResourceTest {
                     .header("Content-Type", "application/json")
                     .body(orderCreateDto)
                     .when()
-                    .post("/users/1/orders")
+                    .post("/orders")
                     .then()
                     .statusCode(200)
                     .body("id", is(2))
@@ -134,7 +136,7 @@ public class OrderResourceTest {
         @DisplayName("Get a list of orders associated to user")
         public void getOrders() {
             given()
-                    .get("/users/1/orders")
+                    .get("/orders")
                     .then()
                     .statusCode(200)
                     .body("size()", is(1));
@@ -144,7 +146,7 @@ public class OrderResourceTest {
         @DisplayName("Delete an orders associated to a user")
         public void deleteOrder() {
             given()
-                    .delete("/users/1/orders/1")
+                    .delete("/orders/1")
                     .then()
                     .statusCode(204);
 

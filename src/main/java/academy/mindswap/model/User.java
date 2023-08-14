@@ -1,7 +1,10 @@
 package academy.mindswap.model;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.security.jpa.Password;
 import io.quarkus.security.jpa.Roles;
+import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
 import jakarta.persistence.*;
 
@@ -9,7 +12,9 @@ import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-@Entity(name = "Users")
+@Entity
+@Table(name = "Users")
+@UserDefinition
 public class User {
 
     @Id
@@ -51,7 +56,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = BcryptUtil.bcryptHash(password);
     }
 
     public String getName() {
@@ -129,5 +134,17 @@ public class User {
         public User build() {
             return user;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", orders=" + orders +
+                '}';
     }
 }

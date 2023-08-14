@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto update(Long id, ItemDto itemDto) {
         Item item = itemRepository.findById(id);
         if (item == null) {
-            throw new WebApplicationException("Item not found", 400);
+            throw new WebApplicationException("Item not found", 404);
         }
 
         item.setName(itemDto.getName());
@@ -53,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
     public void delete(Long id) {
         Item item = itemRepository.findById(id);
         if (item == null) {
-            throw new WebApplicationException("Item not found", 400);
+            throw new WebApplicationException("Item not found", 404);
         }
 
         itemRepository.delete(item);

@@ -40,6 +40,13 @@ public class OrderItemResourceTest {
 
     OrderItemUpdateDto orderItemUpdateDto = new OrderItemUpdateDto();
 
+    User user = User.builder()
+            .withName("andré")
+            .withPassword("ola123")
+            .withEmail("andré@gmail.com")
+            .withRole("user")
+            .build();
+
     @BeforeEach
     @Transactional
     public void setup() {
@@ -58,16 +65,10 @@ public class OrderItemResourceTest {
                 .createNativeQuery("ALTER TABLE Orders AUTO_INCREMENT = 1")
                 .executeUpdate();
 
-        userRepository.deleteAll();
-        userRepository.getEntityManager()
-                .createNativeQuery("ALTER TABLE Users AUTO_INCREMENT = 1")
-                .executeUpdate();
-
-        User user = new User("andré", "test@gmail.com");
-        userRepository.persist(user);
+        User user1 = userRepository.find("email", user.getEmail()).firstResultOptional().orElse(null);
 
         Order order = new Order();
-        order.setUser(user);
+        order.setUser(user1);
         order.setOrderDatetime(LocalDateTime.now());
         orderRepository.persist(order);
 
@@ -88,9 +89,11 @@ public class OrderItemResourceTest {
         @Test
         @DisplayName("List items of a non existent order")
         public void listItemsOfNonExistentOrder() {
+            System.out.println( user.getEmail() + " " + user.getPassword());
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
-                    .get("/users/1/orders/20/items")
+                    .get("/orders/20/items")
                     .then()
                     .statusCode(400);
         }
@@ -99,8 +102,9 @@ public class OrderItemResourceTest {
         @DisplayName("List items of a non existent user")
         public void listItemsOfNonExistentUser() {
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
-                    .get("/users/20/orders/1/items")
+                    .get("/orders/1/items")
                     .then()
                     .statusCode(400);
         }
@@ -115,10 +119,11 @@ public class OrderItemResourceTest {
             orderItemAddDto.setQuantity(5);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .put("/users/1/orders/1/items")
+                    .put("/orders/1/items")
                     .then()
                     .statusCode(400);
         }
@@ -133,10 +138,11 @@ public class OrderItemResourceTest {
             orderItemAddDto.setQuantity(5);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .put("/users/1/orders/20/items")
+                    .put("/orders/20/items")
                     .then()
                     .statusCode(400);
         }
@@ -151,10 +157,11 @@ public class OrderItemResourceTest {
             orderItemAddDto.setQuantity(5);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .put("/users/20/orders/1/items")
+                    .put("/orders/1/items")
                     .then()
                     .statusCode(400);
         }
@@ -166,10 +173,11 @@ public class OrderItemResourceTest {
             orderItemUpdateDto.setQuantity(3);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemUpdateDto)
                     .when()
-                    .put("/users/1/orders/1/items/20")
+                    .put("/orders/1/items/20")
                     .then()
                     .statusCode(400);
         }
@@ -181,10 +189,11 @@ public class OrderItemResourceTest {
             orderItemUpdateDto.setQuantity(3);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemUpdateDto)
                     .when()
-                    .put("/users/20/orders/1/items/1")
+                    .put("/orders/1/items/1")
                     .then()
                     .statusCode(400);
         }
@@ -196,10 +205,11 @@ public class OrderItemResourceTest {
             orderItemUpdateDto.setQuantity(3);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemUpdateDto)
                     .when()
-                    .put("/users/1/orders/20/items/1")
+                    .put("/orders/20/items/1")
                     .then()
                     .statusCode(400);
         }
@@ -208,7 +218,8 @@ public class OrderItemResourceTest {
         @DisplayName("Remove a non existent item from order")
         public void removeItemFromOrder() {
             given()
-                    .delete("/users/1/orders/1/items/20")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
+                    .delete("/orders/1/items/20")
                     .then()
                     .statusCode(400);
         }
@@ -217,7 +228,8 @@ public class OrderItemResourceTest {
         @DisplayName("Remove item from non existent user")
         public void removeItemFromNonExistentUser() {
             given()
-                    .delete("/users/20/orders/1/items/1")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
+                    .delete("/orders/1/items/1")
                     .then()
                     .statusCode(400);
         }
@@ -226,7 +238,8 @@ public class OrderItemResourceTest {
         @DisplayName("Remove item from non existent order")
         public void removeItemFromNonExistentOrder() {
             given()
-                    .delete("/users/1/orders/20/items/1")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
+                    .delete("/orders/20/items/1")
                     .then()
                     .statusCode(400);
         }
@@ -240,8 +253,9 @@ public class OrderItemResourceTest {
         @DisplayName("List items of an order")
         public void listItemsOfOrder() {
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
-                    .get("/users/1/orders/1/items")
+                    .get("/orders/1/items")
                     .then()
                     .statusCode(200)
                     .body("size()", is(1));
@@ -257,10 +271,11 @@ public class OrderItemResourceTest {
             orderItemAddDto.setQuantity(5);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemAddDto)
                     .when()
-                    .put("/users/1/orders/1/items")
+                    .put("/orders/1/items")
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
@@ -276,10 +291,11 @@ public class OrderItemResourceTest {
             orderItemUpdateDto.setQuantity(3);
 
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .contentType(ContentType.JSON)
                     .body(orderItemUpdateDto)
                     .when()
-                    .put("/users/1/orders/1/items/1")
+                    .put("/orders/1/items/1")
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
@@ -290,15 +306,22 @@ public class OrderItemResourceTest {
         @Test
         @DisplayName("Remove Item from Order")
         public void removeItemFromOrder() {
-            given()
+            System.out.println(user.getRole());
+
+            System.out.println();
+
+            given().
+                    auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
-                    .get("/users/1/orders/1/items")
+                    .get("/orders/1/items")
                     .then()
                     .statusCode(200)
                     .body("size()", is(1));
 
+
             given()
-                    .delete("/users/1/orders/1/items/1")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
+                    .delete("/orders/1/items/1")
                     .then()
                     .statusCode(204);
         }

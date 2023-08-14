@@ -1,7 +1,6 @@
 package academy.mindswap.model;
 
 import io.quarkus.elytron.security.common.BcryptUtil;
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.security.jpa.Password;
 import io.quarkus.security.jpa.Roles;
 import io.quarkus.security.jpa.UserDefinition;
@@ -28,7 +27,7 @@ public class User {
     @Password
     private String password;
     @Roles
-    private String role;
+    public String role;
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;

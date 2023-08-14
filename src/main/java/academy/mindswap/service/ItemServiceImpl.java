@@ -33,7 +33,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto findById(Long id) {
-        return itemConverter.toDto(itemRepository.findById(id));
+        Item item = itemRepository.findById(id);
+        if(item == null) {
+            throw new WebApplicationException("Item not found", 404);
+        }
+        return itemConverter.toDto(item);
     }
 
     @Override

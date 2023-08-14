@@ -30,9 +30,6 @@ public class ItemResourceTest {
     @Inject
     OrderRepository orderRepository;
 
-    @Inject
-    UserRepository userRepository;
-
     ItemDto itemDto = new ItemDto(1L, 50.0F, "toalha");
 
     ItemCreateDto itemCreateDto = new ItemCreateDto(50.0F, "toalha");
@@ -55,11 +52,6 @@ public class ItemResourceTest {
                 .createNativeQuery("ALTER TABLE Orders AUTO_INCREMENT = 1")
                 .executeUpdate();
 
-        userRepository.deleteAll();
-        userRepository.getEntityManager()
-                .createNativeQuery("ALTER TABLE Users AUTO_INCREMENT = 1")
-                .executeUpdate();
-
         itemRepository.persist(itemConverter.toEntityFromCreateDto(itemCreateDto));
     }
 
@@ -71,12 +63,11 @@ public class ItemResourceTest {
         @DisplayName("Get an item which not exists")
         public void getItemNotFound() {
             given()
-                    .header("Content-Type", "application/json")
-                    .body(itemDto)
+                    .auth().preemptive().basic("admin@admin.pt", "123")
                     .when()
-                    .put("/items/" + 10)
+                    .get("/items/" + 100)
                     .then()
-                    .statusCode(400);
+                    .statusCode(404);
         }
 
         @Test
@@ -85,19 +76,22 @@ public class ItemResourceTest {
             given()
                     .header("Content-Type", "application/json")
                     .body(itemDto)
+                    .auth().preemptive().basic("admin@admin.pt", "123")
                     .when()
                     .put("/items/" + 10)
                     .then()
-                    .statusCode(400);
+                    .statusCode(404);
         }
 
         @Test
         @DisplayName("Delete an item which not exists")
         public void deleteItemNotFound() {
             given()
+                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .when()
                     .delete("/items/15")
                     .then()
-                    .statusCode(400);
+                    .statusCode(404);
         }
     }
 
@@ -111,6 +105,7 @@ public class ItemResourceTest {
             given()
                     .header("Content-Type", "application/json")
                     .body(itemCreateDto)
+                    .auth().preemptive().basic("admin@admin.pt", "123")
                     .when()
                     .post("/items")
                     .then()
@@ -124,6 +119,8 @@ public class ItemResourceTest {
         @DisplayName("Get list of items")
         public void listItems() {
             given()
+                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .when()
                     .get("/items")
                     .then()
                     .statusCode(200)
@@ -134,6 +131,8 @@ public class ItemResourceTest {
         @DisplayName("Get an item")
         public void listItem() {
             given()
+                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .when()
                     .get("/items/1")
                     .then()
                     .statusCode(200)
@@ -150,6 +149,7 @@ public class ItemResourceTest {
             given()
                     .header("Content-Type", "application/json")
                     .body(itemUpdated)
+                    .auth().preemptive().basic("admin@admin.pt", "123")
                     .when()
                     .put("/items/" + 1)
                     .then()
@@ -165,6 +165,8 @@ public class ItemResourceTest {
         public void deleteItem() {
 
             given()
+                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .when()
                     .delete("/items/1")
                     .then()
                     .statusCode(204);

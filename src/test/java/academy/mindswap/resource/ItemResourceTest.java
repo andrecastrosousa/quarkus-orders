@@ -65,7 +65,7 @@ public class ItemResourceTest {
     @Nested
     @Tag("authorization")
     @DisplayName("Errors on authorization")
-    class OrderItemAuthorizationError {
+    class ItemAuthorizationError {
         @Test
         @DisplayName("Create an item without authorization")
         public void createItemWithoutAuthorization() {

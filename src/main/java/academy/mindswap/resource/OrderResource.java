@@ -24,15 +24,15 @@ public class OrderResource {
     @RolesAllowed("user")
     public List<OrderDto> list(@Context SecurityContext securityContext) {
         System.out.println(securityContext.getUserPrincipal().getName());
-        return orderService.listAll(1L);
+        return orderService.listAll(securityContext.getUserPrincipal().getName());
     }
 
     @GET
     @Path("/{orderId}")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
-    public OrderDto get(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId) {
-        return orderService.findById(userId, orderId);
+    public OrderDto get(@PathParam("orderId") Long orderId, @Context SecurityContext securityContext) {
+        return orderService.findById(securityContext.getUserPrincipal().getName(), orderId);
     }
 
     @POST
@@ -40,24 +40,15 @@ public class OrderResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
     @Transactional
-    public OrderDto create(@PathParam("userId") Long userId, OrderCreateDto order) {
-        return orderService.create(userId, order);
+    public OrderDto create(@Context SecurityContext securityContext, OrderCreateDto order) {
+        return orderService.create(securityContext.getUserPrincipal().getName(), order);
     }
 
     @DELETE
     @Path("/{orderId}")
     @RolesAllowed("user")
     @Transactional
-    public void delete(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId) {
-        orderService.delete(userId, orderId);
+    public void delete(@PathParam("orderId") Long orderId, @Context SecurityContext securityContext) {
+        orderService.delete(securityContext.getUserPrincipal().getName(), orderId);
     }
-
-    /*@PUT
-    @Path("/{orderId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Order update(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, Order order) {
-        return orderService.update(userId, orderId, order);
-    }*/
 }

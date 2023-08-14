@@ -14,5 +14,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Documented
 @InterceptorBinding
-public @interface VerifyUserAndOrder {
+public @interface UserHasOrder {
 }

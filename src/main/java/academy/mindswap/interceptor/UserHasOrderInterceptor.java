@@ -11,10 +11,10 @@ import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import jakarta.ws.rs.WebApplicationException;
 
-@VerifyUserAndOrder
+@UserHasOrder
 @Priority(10)
 @Interceptor
-public class VerifyUserAndOrderInterceptor {
+public class UserHasOrderInterceptor {
 
     @Inject
     UserRepository userRepository;

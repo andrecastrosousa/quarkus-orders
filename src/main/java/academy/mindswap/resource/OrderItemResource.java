@@ -9,11 +9,13 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.SecurityContext;
 
 import java.util.List;
 
-@Path("/users/{userId}/orders/{orderId}/items")
+@Path("/orders/{orderId}/items")
 public class OrderItemResource {
 
     @Inject
@@ -22,8 +24,9 @@ public class OrderItemResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
-    public List<OrderItemDto> get(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId) {
-        return orderItemService.getListOfOrderItem(userId, orderId);
+    public List<OrderItemDto> get(@PathParam("orderId") Long orderId, @Context SecurityContext securityContext) {
+        System.out.println(securityContext.getUserPrincipal().getName());
+        return orderItemService.getListOfOrderItem(1L, orderId);
     }
 
     @PUT

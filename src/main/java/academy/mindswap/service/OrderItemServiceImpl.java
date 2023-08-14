@@ -37,7 +37,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     public List<OrderItemDto> getListOfOrderItem(Long userId, Long orderId) {
         Order order = orderRepository.findById(orderId);
         if (order == null || !order.getUser().getId().equals(userId)) {
-            throw new WebApplicationException("Order not found", 400);
+            throw new WebApplicationException("Order not found", 404);
         }
 
         return order.getOrderItems().stream().map(orderItem -> orderItemConverter.toDto(orderItem)).toList();
@@ -49,7 +49,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         Order order = orderRepository.findById(orderId);
         Item item = itemRepository.findById(orderItemAddDto.getItem().getId());
         if (item == null) {
-            throw new WebApplicationException("Item not found", 400);
+            throw new WebApplicationException("Item not found", 404);
         }
 
         OrderItem orderItem = orderItemRepository.findByOrderIdAndItemId(orderId, item.getId());
@@ -80,15 +80,15 @@ public class OrderItemServiceImpl implements OrderItemService {
     public OrderDto updateItemOnOrder(Long userId, Long orderId, Long itemId, OrderItemUpdateDto orderItemUpdateDto) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
-            throw new WebApplicationException("Order not found", 400);
+            throw new WebApplicationException("Order not found", 404);
         }
         Item item = itemRepository.findById(itemId);
         if (item == null) {
-            throw new WebApplicationException("Item not found", 400);
+            throw new WebApplicationException("Item not found", 404);
         }
         OrderItem orderItem = orderItemRepository.findByOrderIdAndItemId(orderId, itemId);
         if (orderItem == null) {
-            throw new WebApplicationException("Item not found", 400);
+            throw new WebApplicationException("Item not found", 404);
         }
 
         order.setTotal(
@@ -111,15 +111,15 @@ public class OrderItemServiceImpl implements OrderItemService {
     public void removeItemFromOrder(Long userId, Long orderId, Long itemId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
-            throw new WebApplicationException("Order not found", 400);
+            throw new WebApplicationException("Order not found", 404);
         }
         Item item = itemRepository.findById(itemId);
         if (item == null) {
-            throw new WebApplicationException("Item not found", 400);
+            throw new WebApplicationException("Item not found", 404);
         }
         OrderItem orderItem = orderItemRepository.findByOrderIdAndItemId(orderId, itemId);
         if (orderItem == null) {
-            throw new WebApplicationException("Item on order not found", 400);
+            throw new WebApplicationException("Item on order not found", 404);
         }
 
         orderItemRepository.delete(orderItem);

@@ -51,6 +51,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userConverter.toEntityFromCreateDto(userCreateDto);
+        user.setRole("user");
         userRepository.persist(user);
         return userConverter.toDto(user);
     }

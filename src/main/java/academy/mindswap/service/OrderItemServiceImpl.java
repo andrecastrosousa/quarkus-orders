@@ -34,9 +34,9 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @VerifyUserAndOrder
-    public List<OrderItemDto> getListOfOrderItem(Long userId, Long orderId) {
+    public List<OrderItemDto> getListOfOrderItem(String email, Long orderId) {
         Order order = orderRepository.findById(orderId);
-        if (order == null || !order.getUser().getId().equals(userId)) {
+        if (order == null) {
             throw new WebApplicationException("Order not found", 404);
         }
 
@@ -45,7 +45,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @VerifyUserAndOrder
-    public OrderDto addItemToOrder(Long userId, Long orderId, OrderItemDto orderItemAddDto) {
+    public OrderDto addItemToOrder(String email, Long orderId, OrderItemDto orderItemAddDto) {
         Order order = orderRepository.findById(orderId);
         Item item = itemRepository.findById(orderItemAddDto.getItem().getId());
         if (item == null) {
@@ -77,7 +77,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
     @Override
     @VerifyUserAndOrder
-    public OrderDto updateItemOnOrder(Long userId, Long orderId, Long itemId, OrderItemUpdateDto orderItemUpdateDto) {
+    public OrderDto updateItemOnOrder(String email, Long orderId, Long itemId, OrderItemUpdateDto orderItemUpdateDto) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
             throw new WebApplicationException("Order not found", 404);
@@ -108,7 +108,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     @VerifyUserAndOrder
     @Transactional
-    public void removeItemFromOrder(Long userId, Long orderId, Long itemId) {
+    public void removeItemFromOrder(String email, Long orderId, Long itemId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
             throw new WebApplicationException("Order not found", 404);

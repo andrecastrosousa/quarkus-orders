@@ -27,7 +27,7 @@ public class Startup {
         User user = User.builder()
                 .withName("andré")
                 .withPassword("ola123")
-                .withEmail("andré@gmail.com")
+                .withEmail("andre@gmail.com")
                 .withRole("user")
                 .build();
 

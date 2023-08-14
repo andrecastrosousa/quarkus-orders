@@ -7,11 +7,11 @@ import academy.mindswap.dto.OrderItemUpdateDto;
 import java.util.List;
 
 public interface OrderItemService {
-    List<OrderItemDto> getListOfOrderItem(Long userId, Long orderId);
+    List<OrderItemDto> getListOfOrderItem(String email, Long orderId);
 
-    OrderDto addItemToOrder(Long userId, Long orderId, OrderItemDto orderItemAddDto);
+    OrderDto addItemToOrder(String email, Long orderId, OrderItemDto orderItemAddDto);
 
-    OrderDto updateItemOnOrder(Long userId, Long orderId, Long itemId, OrderItemUpdateDto OrderItemUpdateDto);
+    OrderDto updateItemOnOrder(String email, Long orderId, Long itemId, OrderItemUpdateDto OrderItemUpdateDto);
 
-    void removeItemFromOrder(Long userId, Long orderId, Long itemId);
+    void removeItemFromOrder(String email, Long orderId, Long itemId);
 }

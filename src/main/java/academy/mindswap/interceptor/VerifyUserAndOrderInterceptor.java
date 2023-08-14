@@ -24,17 +24,17 @@ public class VerifyUserAndOrderInterceptor {
 
     @AroundInvoke
     public Object validation(InvocationContext ctx) throws Exception {
-        Long userId = (Long) ctx.getParameters()[0];
+        String email = (String) ctx.getParameters()[0];
         Long orderId = (Long) ctx.getParameters()[1];
 
-        User user = userRepository.findById(userId);
+        User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new WebApplicationException("User not found", 400);
+            throw new WebApplicationException("User not found", 404);
         }
 
         Order order = orderRepository.findById(orderId);
-        if (order == null || !order.getUser().getId().equals(userId)) {
-            throw new WebApplicationException("Order not found", 400);
+        if (order == null || !order.getUser().getId().equals(user.getId())) {
+            throw new WebApplicationException("Order not found", 404);
         }
 
 

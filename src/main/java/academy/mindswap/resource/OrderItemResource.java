@@ -25,7 +25,7 @@ public class OrderItemResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
     public List<OrderItemDto> get(@PathParam("orderId") Long orderId, @Context SecurityContext securityContext) {
-        return orderItemService.getListOfOrderItem(1L, orderId);
+        return orderItemService.getListOfOrderItem(securityContext.getUserPrincipal().getName(), orderId);
     }
 
     @PUT
@@ -33,8 +33,12 @@ public class OrderItemResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @RolesAllowed("user")
     @Transactional
-    public OrderDto addItemToOrder(@PathParam("userId") Long userId, @PathParam("orderId") Long orderId, OrderItemDto orderItemAddDto) {
-        return orderItemService.addItemToOrder(userId, orderId, orderItemAddDto);
+    public OrderDto addItemToOrder(
+            @PathParam("orderId") Long orderId,
+            @Context SecurityContext securityContext,
+            OrderItemDto orderItemAddDto
+    ) {
+        return orderItemService.addItemToOrder(securityContext.getUserPrincipal().getName(), orderId, orderItemAddDto);
     }
 
     @PUT
@@ -44,22 +48,22 @@ public class OrderItemResource {
     @RolesAllowed("user")
     @Transactional
     public OrderDto updateItemOnOrder(
-            @PathParam("userId") Long userId,
             @PathParam("orderId") Long orderId,
             @PathParam("itemId") Long itemId,
+            @Context SecurityContext securityContext,
             OrderItemUpdateDto orderItemUpdateDto
     ) {
-        return orderItemService.updateItemOnOrder(userId, orderId, itemId, orderItemUpdateDto);
+        return orderItemService.updateItemOnOrder(securityContext.getUserPrincipal().getName(), orderId, itemId, orderItemUpdateDto);
     }
 
     @DELETE
     @Path("/{itemId}")
     @RolesAllowed("user")
     public void removeItemFromOrder(
-            @PathParam("userId") Long userId,
             @PathParam("orderId") Long orderId,
-            @PathParam("itemId") Long itemId
+            @PathParam("itemId") Long itemId,
+            @Context SecurityContext securityContext
     ) {
-        orderItemService.removeItemFromOrder(userId, orderId, itemId);
+        orderItemService.removeItemFromOrder(securityContext.getUserPrincipal().getName(), orderId, itemId);
     }
 }

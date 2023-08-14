@@ -37,7 +37,7 @@ public class OrderResourceTest {
     @Inject
     ItemRepository itemRepository;
 
-    User user = new User("andré", "test@gmail.com");
+    User user = new User("andré", "andre@gmail.com", "ola123");
 
     OrderCreateDto orderCreateDto = new OrderCreateDto();
 
@@ -59,12 +59,7 @@ public class OrderResourceTest {
                 .createNativeQuery("ALTER TABLE Orders AUTO_INCREMENT = 1")
                 .executeUpdate();
 
-        userRepository.deleteAll();
-        userRepository.getEntityManager()
-                .createNativeQuery("ALTER TABLE Users AUTO_INCREMENT = 1")
-                .executeUpdate();
-
-        userRepository.persist(user);
+        User user = userRepository.findById(2L);
 
         orderCreateDto.setOrderDatetime(LocalDateTime.now());
         Order order = orderConverter.toEntityFromCreateDto(orderCreateDto);

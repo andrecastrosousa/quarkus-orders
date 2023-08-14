@@ -10,7 +10,6 @@ import academy.mindswap.repository.ItemRepository;
 import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
 import academy.mindswap.repository.UserRepository;
-import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
@@ -42,12 +41,9 @@ public class OrderItemResourceTest {
 
     OrderItemUpdateDto orderItemUpdateDto = new OrderItemUpdateDto();
 
-    User user = User.builder()
-            .withName("andré")
-            .withPassword("ola123")
-            .withEmail("andré@gmail.com")
-            .withRole("user")
-            .build();
+    User user = new User("andré", "andre@gmail.com", "ola123");
+
+    User admin = new User("admin", "admin@admin.pt", "123");
 
     @BeforeEach
     @Transactional
@@ -85,30 +81,137 @@ public class OrderItemResourceTest {
     }
 
     @Nested
+    @Tag("authorization")
+    @DisplayName("Errors on authorization")
+    class OrderItemAuthorizationError {
+        @Test
+        @DisplayName("List items without authorization")
+        public void listItemsWithoutAuthorization() {
+            given()
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .when()
+                    .get("/orders/1/items")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("Add Item without authorization")
+        public void addItemWithoutAuthorization() {
+            Item item = new Item("copo", 2);
+            item.setId(1L);
+
+            orderItemAddDto.setItem(item);
+            orderItemAddDto.setQuantity(5);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemAddDto)
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .when()
+                    .put("/orders/1/items")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("Update item without authorization")
+        public void updateItemWithoutAuthorization() {
+            orderItemUpdateDto.setId(1L);
+            orderItemUpdateDto.setQuantity(3);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemUpdateDto)
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .when()
+                    .put("/orders/1/items/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("Remove item without authorization")
+        public void removeItemWithoutAuthorization() {
+            given()
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .when()
+                    .delete("/orders/1/items/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("List items with wrong credentials")
+        public void listItemsWithWrongCredentials() {
+            given()
+                    .auth().preemptive().basic(user.getEmail(), "wrong_password")
+                    .when()
+                    .get("/orders/1/items")
+                    .then()
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
+
+        @Test
+        @DisplayName("Add Item with wrong credentials")
+        public void addItemWithWrongCredentials() {
+            Item item = new Item("copo", 2);
+            item.setId(1L);
+
+            orderItemAddDto.setItem(item);
+            orderItemAddDto.setQuantity(5);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemAddDto)
+                    .auth().preemptive().basic(user.getEmail(), "wrong_password")
+                    .when()
+                    .put("/orders/1/items")
+                    .then()
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
+
+        @Test
+        @DisplayName("Update item with wrong credentials")
+        public void updateItemWithWrongCredentials() {
+            orderItemUpdateDto.setId(1L);
+            orderItemUpdateDto.setQuantity(3);
+
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(orderItemUpdateDto)
+                    .auth().preemptive().basic(user.getEmail(), "wrong_password")
+                    .when()
+                    .put("/orders/1/items/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
+
+        @Test
+        @DisplayName("Remove item with wrong credentials")
+        public void removeItemWithWrongCredentials() {
+            given()
+                    .auth().preemptive().basic(user.getEmail(), "wrong_password")
+                    .when()
+                    .delete("/orders/1/items/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
+    }
+
+    @Nested
     @Tag("errors")
     @DisplayName("Errors on Items of order CRUD")
     class OrderItemErrorCrud {
         @Test
         @DisplayName("List items of a non existent order")
         public void listItemsOfNonExistentOrder() {
-            System.out.println( user.getEmail() + " " + user.getPassword());
             given()
                     .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .get("/orders/20/items")
                     .then()
-                    .statusCode(400);
-        }
-
-        @Test
-        @DisplayName("List items of a non existent user")
-        public void listItemsOfNonExistentUser() {
-            given()
-                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
-                    .when()
-                    .get("/orders/1/items")
-                    .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
@@ -127,7 +230,7 @@ public class OrderItemResourceTest {
                     .when()
                     .put("/orders/1/items")
                     .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
@@ -146,26 +249,7 @@ public class OrderItemResourceTest {
                     .when()
                     .put("/orders/20/items")
                     .then()
-                    .statusCode(400);
-        }
-
-        @Test
-        @DisplayName("Add Item to a non existent user")
-        public void addItemToNonExistentUser() {
-            Item item = new Item("copo", 2);
-            item.setId(1L);
-
-            orderItemAddDto.setItem(item);
-            orderItemAddDto.setQuantity(5);
-
-            given()
-                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
-                    .contentType(ContentType.JSON)
-                    .body(orderItemAddDto)
-                    .when()
-                    .put("/orders/1/items")
-                    .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
@@ -181,23 +265,7 @@ public class OrderItemResourceTest {
                     .when()
                     .put("/orders/1/items/20")
                     .then()
-                    .statusCode(400);
-        }
-
-        @Test
-        @DisplayName("Update item on non existent user")
-        public void updateItemOnNonExistentUser() {
-            orderItemUpdateDto.setId(1L);
-            orderItemUpdateDto.setQuantity(3);
-
-            given()
-                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
-                    .contentType(ContentType.JSON)
-                    .body(orderItemUpdateDto)
-                    .when()
-                    .put("/orders/1/items/1")
-                    .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
@@ -213,7 +281,7 @@ public class OrderItemResourceTest {
                     .when()
                     .put("/orders/20/items/1")
                     .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
@@ -223,17 +291,7 @@ public class OrderItemResourceTest {
                     .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .delete("/orders/1/items/20")
                     .then()
-                    .statusCode(400);
-        }
-
-        @Test
-        @DisplayName("Remove item from non existent user")
-        public void removeItemFromNonExistentUser() {
-            given()
-                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
-                    .delete("/orders/1/items/1")
-                    .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
@@ -243,7 +301,7 @@ public class OrderItemResourceTest {
                     .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .delete("/orders/20/items/1")
                     .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
     }
 
@@ -256,7 +314,7 @@ public class OrderItemResourceTest {
         public void listItemsOfOrder() {
             given()
                     .when()
-                    .auth().preemptive().basic("andré@gmail.com", "ola123")
+                    .auth().preemptive().basic("andre@gmail.com", "ola123")
                     .get("/orders/1/items")
                     .then()
                     .statusCode(HttpStatus.SC_OK)
@@ -281,7 +339,7 @@ public class OrderItemResourceTest {
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
-                    .body("total", is(10.0F))
+                    .body("total", is(4.0F))
                     .body("orderItems.size()", is(2));
 
         }
@@ -301,7 +359,7 @@ public class OrderItemResourceTest {
                     .then()
                     .statusCode(200)
                     .body("id", is(1))
-                    .body("total", is(6.0F))
+                    .body("total", is(0.0F))
                     .body("orderItems.size()", is(1));
         }
 

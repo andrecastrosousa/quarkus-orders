@@ -3,6 +3,7 @@ package academy.mindswap.resource;
 import academy.mindswap.converter.ItemConverter;
 import academy.mindswap.dto.ItemCreateDto;
 import academy.mindswap.dto.ItemDto;
+import academy.mindswap.model.User;
 import academy.mindswap.repository.ItemRepository;
 import academy.mindswap.repository.OrderItemRepository;
 import academy.mindswap.repository.OrderRepository;
@@ -34,6 +35,8 @@ public class ItemResourceTest {
 
     ItemCreateDto itemCreateDto = new ItemCreateDto(50.0F, "toalha");
 
+    User user = new User("admin", "admin@admin.pt", "123");
+
     @BeforeEach
     @Transactional
     void setup() {
@@ -63,7 +66,7 @@ public class ItemResourceTest {
         @DisplayName("Get an item which not exists")
         public void getItemNotFound() {
             given()
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .get("/items/" + 100)
                     .then()
@@ -76,7 +79,7 @@ public class ItemResourceTest {
             given()
                     .header("Content-Type", "application/json")
                     .body(itemDto)
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .put("/items/" + 10)
                     .then()
@@ -87,7 +90,7 @@ public class ItemResourceTest {
         @DisplayName("Delete an item which not exists")
         public void deleteItemNotFound() {
             given()
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .delete("/items/15")
                     .then()
@@ -105,7 +108,7 @@ public class ItemResourceTest {
             given()
                     .header("Content-Type", "application/json")
                     .body(itemCreateDto)
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .post("/items")
                     .then()
@@ -119,7 +122,7 @@ public class ItemResourceTest {
         @DisplayName("Get list of items")
         public void listItems() {
             given()
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .get("/items")
                     .then()
@@ -131,7 +134,7 @@ public class ItemResourceTest {
         @DisplayName("Get an item")
         public void listItem() {
             given()
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .get("/items/1")
                     .then()
@@ -149,7 +152,7 @@ public class ItemResourceTest {
             given()
                     .header("Content-Type", "application/json")
                     .body(itemUpdated)
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .put("/items/" + 1)
                     .then()
@@ -165,7 +168,7 @@ public class ItemResourceTest {
         public void deleteItem() {
 
             given()
-                    .auth().preemptive().basic("admin@admin.pt", "123")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .delete("/items/1")
                     .then()

@@ -3,7 +3,7 @@ package academy.mindswap.service;
 import academy.mindswap.converter.OrderConverter;
 import academy.mindswap.dto.OrderCreateDto;
 import academy.mindswap.dto.OrderDto;
-import academy.mindswap.interceptor.VerifyUserAndOrder;
+import academy.mindswap.interceptor.UserHasOrder;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.User;
 import academy.mindswap.repository.OrderRepository;
@@ -26,8 +26,8 @@ public class OrderServiceImpl implements OrderService {
     OrderConverter orderConverter;
 
     @Override
-    public List<OrderDto> listAll(Long userId) {
-        User user = userRepository.findById(userId);
+    public List<OrderDto> listAll(String email) {
+        User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new WebApplicationException("User not found", 404);
         }
@@ -37,19 +37,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @VerifyUserAndOrder
-    public OrderDto findById(Long userId, Long orderId) {
-        Order orderFound = orderRepository.findById(orderId);
-        if (orderFound == null) {
-            throw new WebApplicationException("Order not found", 404);
-        }
-
-        return orderConverter.toDto(orderFound);
+    @UserHasOrder
+    public OrderDto findById(String email, Long orderId) {
+        return orderConverter.toDto(orderRepository.findById(orderId));
     }
 
     @Override
-    public OrderDto create(Long userId, OrderCreateDto orderCreateDto) {
-        User user = userRepository.findById(userId);
+    public OrderDto create(String email, OrderCreateDto orderCreateDto) {
+        User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new WebApplicationException("User not found", 404);
         }
@@ -62,29 +57,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @VerifyUserAndOrder
-    public void delete(Long userId, Long orderId) {
-        Order orderFound = orderRepository.findById(orderId);
-        if (orderFound == null) {
-            throw new WebApplicationException("Order not found", 404);
-        }
-
-        orderRepository.delete(orderFound);
+    @UserHasOrder
+    public void delete(String email, Long orderId) {
+        orderRepository.delete(orderRepository.findById(orderId));
     }
-
-    /*@Override
-    @VerifyUserAndOrder
-    public OrderDto update(Long userId, Long orderId, Order order) {
-        Order orderFound = orderRepository.findById(orderId);
-
-        if(orderFound == null || !order.getId().equals(orderId)) {
-            throw new WebApplicationException("Order not found", 404);
-        }
-
-        orderFound.setTotal(order.getTotal());
-        orderRepository.persist(orderFound);
-
-        return orderConverter.toDto(orderFound);
-    }*/
-
 }

@@ -5,7 +5,7 @@ import academy.mindswap.converter.OrderItemConverter;
 import academy.mindswap.dto.OrderDto;
 import academy.mindswap.dto.OrderItemDto;
 import academy.mindswap.dto.OrderItemUpdateDto;
-import academy.mindswap.interceptor.VerifyUserAndOrder;
+import academy.mindswap.interceptor.UserHasOrder;
 import academy.mindswap.model.Item;
 import academy.mindswap.model.Order;
 import academy.mindswap.model.OrderItem;
@@ -33,7 +33,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     OrderItemConverter orderItemConverter;
 
     @Override
-    @VerifyUserAndOrder
+    @UserHasOrder
     public List<OrderItemDto> getListOfOrderItem(String email, Long orderId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
@@ -44,7 +44,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    @VerifyUserAndOrder
+    @UserHasOrder
     public OrderDto addItemToOrder(String email, Long orderId, OrderItemDto orderItemAddDto) {
         Order order = orderRepository.findById(orderId);
         Item item = itemRepository.findById(orderItemAddDto.getItem().getId());
@@ -76,7 +76,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    @VerifyUserAndOrder
+    @UserHasOrder
     public OrderDto updateItemOnOrder(String email, Long orderId, Long itemId, OrderItemUpdateDto orderItemUpdateDto) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
@@ -106,7 +106,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    @VerifyUserAndOrder
+    @UserHasOrder
     @Transactional
     public void removeItemFromOrder(String email, Long orderId, Long itemId) {
         Order order = orderRepository.findById(orderId);

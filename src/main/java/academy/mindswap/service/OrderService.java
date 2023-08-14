@@ -7,12 +7,11 @@ import java.util.List;
 
 public interface OrderService {
 
-    List<OrderDto> listAll(Long userId);
+    List<OrderDto> listAll(String email);
 
-    OrderDto findById(Long userId, Long orderId);
+    OrderDto findById(String email, Long orderId);
 
-    OrderDto create(Long userId, OrderCreateDto order);
+    OrderDto create(String email, OrderCreateDto order);
 
-    void delete(Long userId, Long orderId);
-    // OrderDto update(Long userId, Long orderId, Order order);
+    void delete(String email, Long orderId);
 }

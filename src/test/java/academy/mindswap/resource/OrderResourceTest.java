@@ -11,6 +11,7 @@ import academy.mindswap.repository.UserRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
@@ -71,46 +72,114 @@ public class OrderResourceTest {
     }
 
     @Nested
-    @Tag("validations")
-    @DisplayName("Orders invalid crud")
-    class OrderCrudValidator {
+    @Tag("authorization")
+    @DisplayName("Errors on authorization")
+    class OrderAuthorizationError {
         @Test
-        @DisplayName("Create an order from an invalid user")
-        public void postUserNotFound() {
+        @DisplayName("Create an order without authorization")
+        public void createWithoutAuthorization() {
+            given()
+                    .header("Content-Type", "application/json")
+                    .body(orderCreateDto)
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .when()
+                    .post("/orders")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("Get a list of orders without authorization")
+        public void getOrdersWithoutAuthorization() {
+            given()
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .get("/orders")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("Get an order without authorization")
+        public void getOrderWithoutAuthorization() {
+            given()
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .get("/orders/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("Delete an order without authorization")
+        public void deleteOrderWithoutAuthorization() {
+            given()
+                    .auth().preemptive().basic(admin.getEmail(), admin.getPassword())
+                    .delete("/orders/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+        @Test
+        @DisplayName("Create an order without authentication")
+        public void createWithoutAuthentication() {
             given()
                     .header("Content-Type", "application/json")
                     .body(orderCreateDto)
                     .when()
                     .post("/orders")
                     .then()
-                    .statusCode(404);
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
         }
 
         @Test
-        @DisplayName("Get a list of orders from an invalid user")
-        public void getOrdersUserNotFound() {
+        @DisplayName("Get a list of orders without authentication")
+        public void getOrdersWithoutAuthentication() {
             given()
                     .get("/orders")
                     .then()
-                    .statusCode(404);
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
         }
 
+        @Test
+        @DisplayName("Get an order without authentication")
+        public void getOrderWithoutAuthentication() {
+            given()
+                    .get("/orders/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
+
+        @Test
+        @DisplayName("Delete an order without authentication")
+        public void deleteOrderWithoutAuthentication() {
+            given()
+                    .delete("/orders/1")
+                    .then()
+                    .statusCode(HttpStatus.SC_UNAUTHORIZED);
+        }
+    }
+
+    @Nested
+    @Tag("validations")
+    @DisplayName("Orders invalid crud")
+    class OrderCrudValidator {
         @Test
         @DisplayName("Get an order not founded")
         public void getOrderNotFound() {
             given()
-                    .get("/orders/30")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
+                    .get("/orders/2")
                     .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
 
         @Test
         @DisplayName("Delete an order not founded")
         public void deleteOrderNotFound() {
             given()
-                    .delete("/orders/15")
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
+                    .delete("/orders/2")
                     .then()
-                    .statusCode(400);
+                    .statusCode(HttpStatus.SC_NOT_FOUND);
         }
     }
 
@@ -124,6 +193,7 @@ public class OrderResourceTest {
             given()
                     .header("Content-Type", "application/json")
                     .body(orderCreateDto)
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .when()
                     .post("/orders")
                     .then()
@@ -136,6 +206,7 @@ public class OrderResourceTest {
         @DisplayName("Get a list of orders associated to user")
         public void getOrders() {
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .get("/orders")
                     .then()
                     .statusCode(200)
@@ -146,6 +217,7 @@ public class OrderResourceTest {
         @DisplayName("Delete an orders associated to a user")
         public void deleteOrder() {
             given()
+                    .auth().preemptive().basic(user.getEmail(), user.getPassword())
                     .delete("/orders/1")
                     .then()
                     .statusCode(204);
